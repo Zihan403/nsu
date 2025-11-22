@@ -219,228 +219,153 @@ export default function About() {
           </div>
           
           <div className="relative">
-            {/* President */}
-            <div className="flex justify-center mb-12">
+            {/* President & Vice President */}
+            <div className="flex justify-center gap-16 mb-12">
+              {/* President */}
               <div className="group">
-                <div className="relative">
-                  <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-600 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
-                    <Image
-                      src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-                      alt="Dr. Rashid Ahmed"
-                      width={128}
-                      height={128}
-                      className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
-                    />
-                  </div>
-                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center border-2 border-white shadow-md">
-                    <svg className="w-4 h-4 text-yellow-700" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                    </svg>
-                  </div>
+                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-900 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
+                  <Image
+                    src="/assets/images/team/tanvir.jpg"
+                    alt="Tanveer Masud"
+                    width={128}
+                    height={128}
+                    className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
+                  />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">Dr. Rashid Ahmed</h3>
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">Tanveer Masud</h3>
                   <p className="text-blue-600 font-semibold text-lg">President</p>
-                  <p className="text-gray-600 text-sm">EEE '08</p>
                 </div>
               </div>
-            </div>
 
-            {/* Connection line from President */}
-            <div className="flex justify-center mb-8">
-              <div className="w-px h-12 bg-gradient-to-b from-blue-400 to-transparent"></div>
-            </div>
-
-            {/* Vice President & General Secretary */}
-            <div className="flex justify-center gap-32 mb-12">
               {/* Vice President */}
-              <div className="group relative">
-                <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-green-500 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
+              <div className="group">
+                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-900 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
                   <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-                    alt="Fatima Khan"
-                    width={112}
-                    height={112}
+                    src="/assets/images/team/Aveen Ali.jpg"
+                    alt="Aveen Ali"
+                    width={128}
+                    height={128}
                     className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
                   />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
-                  <h3 className="text-lg font-bold text-gray-900 mb-1">Fatima Khan</h3>
-                  <p className="text-green-600 font-semibold">Vice President</p>
-                  <p className="text-gray-600 text-sm">BBA '12</p>
-                </div>
-              </div>
-
-              {/* General Secretary */}
-              <div className="group relative">
-                <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-purple-500 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
-                  <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-                    alt="Mohammad Hassan"
-                    width={112}
-                    height={112}
-                    className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
-                  />
-                </div>
-                <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
-                  <h3 className="text-lg font-bold text-gray-900 mb-1">Mohammad Hassan</h3>
-                  <p className="text-purple-600 font-semibold">General Secretary</p>
-                  <p className="text-gray-600 text-sm">CSE '15</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">Aveen Ali</h3>
+                  <p className="text-green-600 font-semibold text-lg">Vice President</p>
                 </div>
               </div>
             </div>
 
-            {/* Connection lines to members */}
-            <div className="flex justify-center mb-8">
-              <div className="w-px h-12 bg-gradient-to-b from-gray-400 to-transparent"></div>
-            </div>
-
-            {/* Executive Members - First Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8 max-w-4xl mx-auto">
-              {/* Treasurer */}
+            {/* Secretaries - First Row */}
+            <div className="grid grid-cols-3 gap-8 mb-8 max-w-4xl mx-auto">
+              {/* Secretary Cultural */}
               <div className="group">
-                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-orange-500 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
+                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-900 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
                   <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-                    alt="Ayesha Rahman"
+                    src="/assets/images/team/Fahria_Afrin.jpeg"
+                    alt="Fahria Afrin"
                     width={96}
                     height={96}
                     className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
                   />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
-                  <h3 className="text-base font-bold text-gray-900 mb-1">Ayesha Rahman</h3>
-                  <p className="text-orange-600 font-medium text-sm">Treasurer</p>
-                  <p className="text-gray-600 text-xs">Pharmacy '10</p>
+                  <h3 className="text-base font-bold text-gray-900 mb-1">Fahria Afrin</h3>
+                  <p className="text-teal-600 font-medium text-sm">Secretary</p>
+                  <p className="text-gray-600 text-xs">Cultural</p>
                 </div>
               </div>
 
-              {/* Joint Secretary */}
+              {/* Secretary Community Engagement */}
               <div className="group">
-                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-teal-500 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
+                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-900 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
                   <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-                    alt="Ahmed Karim"
+                    src="/assets/images/team/sarzana asif.jpeg"
+                    alt="Sarjana Asif"
                     width={96}
                     height={96}
-                    className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
+                    className="w-full h-full object-cover object-top scale-125 group-hover:brightness-110 transition-all duration-300"
                   />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
-                  <h3 className="text-base font-bold text-gray-900 mb-1">Ahmed Karim</h3>
-                  <p className="text-teal-600 font-medium text-sm">Joint Secretary</p>
-                  <p className="text-gray-600 text-xs">CSE '14</p>
+                  <h3 className="text-base font-bold text-gray-900 mb-1">Sarjana Asif</h3>
+                  <p className="text-pink-600 font-medium text-sm">Secretary</p>
+                  <p className="text-gray-600 text-xs">Community Engagement</p>
                 </div>
               </div>
 
-              {/* Events Coordinator */}
+              {/* Secretary Media & Sports */}
               <div className="group">
-                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-pink-500 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
+                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-900 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
                   <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-                    alt="Samira Islam"
+                    src="/assets/images/team/Majedul_Huq.JPG"
+                    alt="Majedul Huq"
                     width={96}
                     height={96}
                     className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
                   />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
-                  <h3 className="text-base font-bold text-gray-900 mb-1">Samira Islam</h3>
-                  <p className="text-pink-600 font-medium text-sm">Events Coordinator</p>
-                  <p className="text-gray-600 text-xs">BBA '16</p>
-                </div>
-              </div>
-
-              {/* Communications Lead */}
-              <div className="group">
-                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-indigo-500 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
-                  <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-                    alt="Tanvir Hasan"
-                    width={96}
-                    height={96}
-                    className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
-                  />
-                </div>
-                <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
-                  <h3 className="text-base font-bold text-gray-900 mb-1">Tanvir Hasan</h3>
-                  <p className="text-indigo-600 font-medium text-sm">Communications Lead</p>
-                  <p className="text-gray-600 text-xs">EEE '13</p>
+                  <h3 className="text-base font-bold text-gray-900 mb-1">Majedul Huq</h3>
+                  <p className="text-indigo-600 font-medium text-sm">Secretary</p>
+                  <p className="text-gray-600 text-xs">Media & Sports</p>
                 </div>
               </div>
             </div>
 
-            {/* Executive Members - Second Row */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-              {/* Membership Coordinator */}
+            {/* Secretaries - Second Row */}
+            <div className="grid grid-cols-3 gap-8 max-w-4xl mx-auto">
+              {/* Secretary Events */}
               <div className="group">
-                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-red-500 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
+                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-900 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
                   <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-                    alt="Nadia Sultana"
+                    src="/assets/images/team/Namia Nowshin.jpg"
+                    alt="Namia Nowshin"
                     width={96}
                     height={96}
                     className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
                   />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
-                  <h3 className="text-base font-bold text-gray-900 mb-1">Nadia Sultana</h3>
-                  <p className="text-red-600 font-medium text-sm">Membership Coordinator</p>
-                  <p className="text-gray-600 text-xs">Law '11</p>
+                  <h3 className="text-base font-bold text-gray-900 mb-1">Namia Nowshin</h3>
+                  <p className="text-red-600 font-medium text-sm">Secretary</p>
+                  <p className="text-gray-600 text-xs">Events</p>
                 </div>
               </div>
 
-              {/* IT Coordinator */}
+              {/* Secretary Alumni Growth & Membership */}
               <div className="group">
-                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-cyan-500 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
+                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-900 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
                   <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-                    alt="Sabbir Ahmed"
+                    src="/assets/images/team/MD Sarowar Hossain.jpeg"
+                    alt="Md Sarowar Hossain"
                     width={96}
                     height={96}
-                    className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
+                    className="w-full h-full object-cover object-top scale-125 group-hover:brightness-110 transition-all duration-300"
                   />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
-                  <h3 className="text-base font-bold text-gray-900 mb-1">Sabbir Ahmed</h3>
-                  <p className="text-cyan-600 font-medium text-sm">IT Coordinator</p>
-                  <p className="text-gray-600 text-xs">CSE '17</p>
+                  <h3 className="text-base font-bold text-gray-900 mb-1">Md Sarowar Hossain</h3>
+                  <p className="text-purple-600 font-medium text-sm">Secretary</p>
+                  <p className="text-gray-600 text-xs">Alumni Growth & Membership</p>
                 </div>
               </div>
 
-              {/* Social Coordinator */}
+              {/* Secretary Marketing & Global Engagement */}
               <div className="group">
-                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-yellow-500 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
+                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-blue-900 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
                   <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-                    alt="Rubaiya Khan"
+                    src="/assets/images/team/Md. Rayan Ahmad.jpeg"
+                    alt="Rayan Ahmed"
                     width={96}
                     height={96}
-                    className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
+                    className="w-full h-full object-cover object-top scale-125 group-hover:brightness-110 transition-all duration-300"
                   />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
-                  <h3 className="text-base font-bold text-gray-900 mb-1">Rubaiya Khan</h3>
-                  <p className="text-yellow-600 font-medium text-sm">Social Coordinator</p>
-                  <p className="text-gray-600 text-xs">Architecture '15</p>
-                </div>
-              </div>
-
-              {/* Mentorship Lead */}
-              <div className="group">
-                <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-emerald-500 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
-                  <Image
-                    src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
-                    alt="Imran Hossain"
-                    width={96}
-                    height={96}
-                    className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
-                  />
-                </div>
-                <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
-                  <h3 className="text-base font-bold text-gray-900 mb-1">Imran Hossain</h3>
-                  <p className="text-emerald-600 font-medium text-sm">Mentorship Lead</p>
-                  <p className="text-gray-600 text-xs">Business '09</p>
+                  <h3 className="text-base font-bold text-gray-900 mb-1">Rayan Ahmed</h3>
+                  <p className="text-orange-600 font-medium text-sm">Secretary</p>
+                  <p className="text-gray-600 text-xs">Marketing & Global Engagement</p>
                 </div>
               </div>
             </div>
@@ -450,44 +375,61 @@ export default function About() {
 
       {/* Our Journey */}
       <div className="bg-gradient-to-b from-gray-50 to-white py-20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">Our Journey</h2>
             <p className="text-xl text-gray-600">A decade of building community and creating impact</p>
           </div>
           
           <div className="relative">
-            {/* Vertical line */}
-            <div className="absolute left-8 md:left-16 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-400 via-blue-500 to-blue-600"></div>
+            {/* Center vertical line */}
+            <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-400 via-blue-600 to-blue-800"></div>
             
-            <div className="space-y-8">
+            <div className="space-y-16">
               {milestones.map((milestone, index) => (
                 <div 
                   key={index} 
-                  className="relative pl-20 md:pl-32 opacity-0 animate-fade-in-up"
-                  style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'forwards' }}
+                  className={`relative flex flex-col md:flex-row items-center gap-8 ${
+                    index % 2 === 0 ? 'md:flex-row-reverse' : ''
+                  }`}
                 >
-                  {/* Year badge */}
-                  <div className="absolute left-0 md:left-4 w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-700 rounded-full flex items-center justify-center shadow-lg border-4 border-white z-10">
-                    <span className="text-white font-bold text-lg">{milestone.year}</span>
+                  {/* Year badge - center */}
+                  <div className="absolute left-1/2 transform -translate-x-1/2 w-20 h-20 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 rounded-full flex flex-col items-center justify-center shadow-2xl border-4 border-white z-10">
+                    <span className="text-white font-bold text-xl">{milestone.year}</span>
                   </div>
                   
-                  {/* Content card */}
-                  <div className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-6 border-l-4 border-blue-500 hover:border-blue-600 transform hover:-translate-y-1">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                      <span className="text-blue-600">{milestone.title}</span>
-                    </h3>
-                    <ul className="space-y-3">
-                      {milestone.events.map((event, eventIndex) => (
-                        <li key={eventIndex} className="flex items-start gap-3 text-gray-700">
-                          <svg className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
-                          <span className="leading-relaxed">{event}</span>
-                        </li>
-                      ))}
-                    </ul>
+                  {/* Content card - alternating sides */}
+                  <div className={`w-full md:w-5/12 ${index % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
+                    <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border-2 border-blue-100 hover:border-blue-300 transform hover:-translate-y-2">
+                      <h3 className={`text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3 ${
+                        index % 2 === 0 ? 'md:justify-end' : 'md:justify-start'
+                      }`}>
+                        <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+                          {milestone.title}
+                        </span>
+                      </h3>
+                      <ul className="space-y-4">
+                        {milestone.events.map((event, eventIndex) => (
+                          <li 
+                            key={eventIndex} 
+                            className={`flex items-start gap-3 text-gray-700 ${
+                              index % 2 === 0 ? 'md:flex-row-reverse md:text-right' : ''
+                            }`}
+                          >
+                            <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mt-0.5">
+                              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <span className="leading-relaxed text-base">{event}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
+                  
+                  {/* Spacer for the other side */}
+                  <div className="hidden md:block w-5/12"></div>
                 </div>
               ))}
             </div>

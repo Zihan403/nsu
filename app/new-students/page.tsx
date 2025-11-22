@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 
 export default function NewStudentsPage() {
   const [openSections, setOpenSections] = useState<{[key: string]: boolean}>({})
@@ -263,14 +264,60 @@ export default function NewStudentsPage() {
           </div>
         </div>
 
-        {/* Video Message Section */}
-        <div className="bg-gradient-to-r from-blue-50 to-sky-50 rounded-2xl shadow-lg p-8 mb-12 animate-fade-in-up animation-delay-200">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">Message from Our Alumni</h2>
-          <div className="aspect-video bg-gray-200 rounded-lg flex items-center justify-center">
-            <div className="text-center text-gray-500">
-              <div className="text-6xl mb-4">▶️</div>
-              <p className="text-lg font-medium">Welcome Video Coming Soon</p>
-              <p className="text-sm">Hear from students who have been in your shoes</p>
+        {/* President's Welcome Message */}
+        <div className="bg-gradient-to-r from-blue-50 to-sky-50 rounded-2xl shadow-lg p-8 md:p-12 mb-12 animate-fade-in-up animation-delay-200">
+          <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">Welcome Message from the President</h2>
+          
+          <div className="flex flex-col md:flex-row gap-8 items-start">
+            {/* Message Content */}
+            <div className="flex-1 space-y-4 text-gray-700 leading-relaxed">
+              <p className="font-semibold text-lg text-blue-900">Warm Greetings to all Melbourne NSUers,</p>
+              
+              <p>
+                It is my pleasure to welcome you to the official online home of the Melbourne NSUers Alumni Association. This platform marks an exciting new chapter for our community — a space designed to help us stay connected, support one another, and grow stronger together.
+              </p>
+              
+              <p>
+                To our new graduates who have recently flown from Bangladesh to start a new journey in Melbourne — congratulations on reaching an important milestone. We know stepping into a new country can feel overwhelming, but please remember you are not alone. This alumni community is your home away from home.
+              </p>
+              
+              <p>
+                Our website has been created to help you settle in with confidence. From essential guides about living in Melbourne to career support, events, and connecting with senior alumni — everything here is designed to make your transition smoother. And if you ever feel uncertain or need help at any stage, please reach out. We are here for you.
+              </p>
+              
+              <p>
+                To our existing and senior members, thank you for your continuous support and commitment to this community. As we focus on building a stronger, more connected network that represents NSU on a global stage, your guidance, experience, and engagement are invaluable. Together, we can elevate our alumni presence and create meaningful opportunities for the next generation.
+              </p>
+              
+              <p>
+                Thank you for being part of this journey. Let us continue to uphold the NSU spirit and build a united community that we are all proud of.
+              </p>
+              
+              <div className="pt-4 border-t border-blue-200 mt-6">
+                <p className="font-semibold text-gray-900">Warm regards,</p>
+                <p className="font-bold text-blue-900 text-lg">Tanveer Masud</p>
+                <p className="text-gray-600 italic">President, Melbourne NSUers Alumni Association</p>
+              </div>
+            </div>
+            
+            {/* President Photo */}
+            <div className="md:w-80 flex-shrink-0">
+              <div className="sticky top-8">
+                <div className="bg-white rounded-2xl shadow-xl p-6 text-center">
+                  <div className="w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-blue-900 shadow-lg mb-4">
+                    <Image 
+                      src="/assets/images/team/tanvir.jpg"
+                      alt="Tanveer Masud"
+                      width={192}
+                      height={192}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">Tanveer Masud</h3>
+                  <p className="text-blue-600 font-semibold mb-2">President</p>
+                  <p className="text-gray-600 text-sm">Melbourne NSUers Alumni Association</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -11,75 +11,51 @@ export default function EditProfile() {
   const { user, userProfile, updateUserProfile } = useAuth()
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    countryCode: '+61',
     phoneNumber: '',
     streetAddress: '',
     suburb: '',
-    postcode: '',
-    major: '',
-    nsuId: '',
-    currentJob: '',
-    company: '',
-    location: ''
+    state: '',
+    postcode: ''
   })
-
-  // Load user data when component mounts
-  useEffect(() => {
-    if (userProfile) {
-      // Parse phone number to separate country code if it exists
-      let phoneNum = userProfile.phoneNumber || ''
-      let countryCode = '+61'
-      
-      if (phoneNum.startsWith('+')) {
-        // Extract country code (assuming format like +61XXXXXXXXX)
-        countryCode = phoneNum.substring(0, 3)
-        phoneNum = phoneNum.substring(3)
-      }
-
-      // Parse address if it exists (try to split by comma)
-      let streetAddress = ''
-      let suburb = ''
-      let postcode = ''
-      
-      if (userProfile.address) {
-        const addressParts = userProfile.address.split(',').map(s => s.trim())
-        streetAddress = addressParts[0] || ''
-        suburb = addressParts[1] || ''
-        postcode = addressParts[2] || ''
-      }
-
-      setFormData({
-        firstName: userProfile.firstName || '',
-        lastName: userProfile.lastName || '',
-        countryCode: countryCode,
-        phoneNumber: phoneNum,
-        streetAddress: streetAddress,
-        suburb: suburb,
-        postcode: postcode,
-        major: userProfile.major || '',
-        nsuId: userProfile.nsuId || '',
-        currentJob: userProfile.currentJob || '',
-        company: userProfile.company || '',
-        location: userProfile.location || ''
-      })
-      
-      if (userProfile.photoURL) {
-        setPhotoPreview(userProfile.photoURL)
-      }
-    }
-  }, [userProfile])
 
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  // Load user data
+  useEffect(() => {
+    if (!userProfile) {
+      setIsLoading(true)
+      return
+    }
+    
+    setIsLoading(false)
+
+    // Parse address
+    const addressParts = userProfile.address ? userProfile.address.split(',').map(s => s.trim()) : []
+
+    setFormData({
+      firstName: userProfile.firstName || '',
+      lastName: userProfile.lastName || '',
+      phoneNumber: userProfile.phoneNumber || '',
+      streetAddress: addressParts[0] || '',
+      suburb: addressParts[1] || '',
+      state: addressParts[2] || '',
+      postcode: addressParts[3] || ''
+    })
+
+    if (userProfile.photoURL) {
+      setPhotoPreview(userProfile.photoURL)
+    }
+  }, [userProfile])
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -89,13 +65,11 @@ export default function EditProfile() {
   const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      // Validate file type
       if (!file.type.startsWith('image/')) {
         setMessage({ type: 'error', text: 'Please select an image file' })
         return
       }
       
-      // Validate file size (max 5MB)
       if (file.size > 5 * 1024 * 1024) {
         setMessage({ type: 'error', text: 'Image size should be less than 5MB' })
         return
@@ -103,7 +77,6 @@ export default function EditProfile() {
 
       setSelectedFile(file)
       
-      // Create preview
       const reader = new FileReader()
       reader.onloadend = () => {
         setPhotoPreview(reader.result as string)
@@ -112,28 +85,20 @@ export default function EditProfile() {
     }
   }
 
-  const handlePhotoUpload = async () => {
+  const handlePhotoUpload = async (): Promise<string | null> => {
     if (!selectedFile || !user) return null
 
-    setUploading(true)
     try {
-      // Create a reference to the storage location
       const fileExtension = selectedFile.name.split('.').pop()
       const fileName = `profile-photos/${user.uid}.${fileExtension}`
       const storageRef = ref(storage, fileName)
 
-      // Upload the file
       await uploadBytes(storageRef, selectedFile)
-
-      // Get the download URL
       const downloadURL = await getDownloadURL(storageRef)
       
-      setUploading(false)
       return downloadURL
     } catch (error) {
       console.error('Error uploading photo:', error)
-      setUploading(false)
-      setMessage({ type: 'error', text: 'Failed to upload photo' })
       return null
     }
   }
@@ -144,60 +109,54 @@ export default function EditProfile() {
     setMessage(null)
 
     try {
-      let photoURL = userProfile?.photoURL
-
-      // Upload photo if a new one was selected
-      if (selectedFile) {
-        const uploadedURL = await handlePhotoUpload()
-        if (uploadedURL) {
-          photoURL = uploadedURL
-        } else {
-          throw new Error('Failed to upload photo')
-        }
-      }
-
       // Combine address fields
-      const fullAddress = [formData.streetAddress, formData.suburb, formData.postcode]
+      const fullAddress = [formData.streetAddress, formData.suburb, formData.state, formData.postcode]
         .filter(Boolean)
         .join(', ')
 
-      // Combine country code and phone number
-      const fullPhoneNumber = formData.phoneNumber 
-        ? `${formData.countryCode}${formData.phoneNumber}`.replace(/\s+/g, '')
-        : ''
-
       // Prepare update data
-      const updateData = {
+      const updateData: any = {
         firstName: formData.firstName,
         lastName: formData.lastName,
         displayName: `${formData.firstName} ${formData.lastName}`,
-        phoneNumber: fullPhoneNumber,
-        address: fullAddress,
-        major: formData.major,
-        nsuId: formData.nsuId,
-        currentJob: formData.currentJob,
-        company: formData.company,
-        location: formData.location,
-        ...(photoURL && { photoURL })
+        phoneNumber: formData.phoneNumber,
+        address: fullAddress
       }
 
-      console.log('Updating profile with:', updateData)
+      // Upload photo if selected
+      if (selectedFile) {
+        const uploadedURL = await handlePhotoUpload()
+        if (uploadedURL) {
+          updateData.photoURL = uploadedURL
+        }
+      }
 
-      // Update profile
       await updateUserProfile(updateData)
 
+      setSaving(false)
       setMessage({ type: 'success', text: 'Profile updated successfully!' })
-      setSelectedFile(null)
       
-      // Redirect to dashboard after 1.5 seconds
       setTimeout(() => {
         router.push('/dashboard')
       }, 1500)
     } catch (error: any) {
       console.error('Error updating profile:', error)
-      setMessage({ type: 'error', text: error.message || 'Failed to update profile' })
       setSaving(false)
+      setMessage({ type: 'error', text: error.message || 'Failed to update profile' })
     }
+  }
+
+  if (isLoading) {
+    return (
+      <ProtectedRoute>
+        <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50 py-12 flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading profile...</p>
+          </div>
+        </div>
+      </ProtectedRoute>
+    )
   }
 
   return (
@@ -208,35 +167,44 @@ export default function EditProfile() {
           <div className="mb-8">
             <button
               onClick={() => router.back()}
-              className="text-blue-600 hover:text-blue-700 mb-4 flex items-center gap-2"
+              className="text-blue-600 hover:text-blue-700 mb-4 flex items-center gap-2 font-medium"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               Back
             </button>
-            <h1 className="text-3xl font-bold text-gray-900">Edit Profile</h1>
+            <h1 className="text-4xl font-bold text-gray-900">Edit Profile</h1>
             <p className="text-gray-600 mt-2">Update your personal information and profile picture</p>
           </div>
 
           {/* Success/Error Message */}
           {message && (
-            <div className={`mb-6 p-4 rounded-lg ${
+            <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
               message.type === 'success' 
                 ? 'bg-green-50 border border-green-200 text-green-700' 
                 : 'bg-red-50 border border-red-200 text-red-700'
             }`}>
-              {message.text}
+              {message.type === 'success' ? (
+                <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+              )}
+              <span className="font-medium">{message.text}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Profile Photo Section */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-blue-600">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Profile Photo</h2>
-              <div className="flex items-center gap-6">
+            <div className="bg-white rounded-xl shadow-md p-8 border-t-4 border-blue-600">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Profile Photo</h2>
+              <div className="flex flex-col sm:flex-row items-center gap-6">
                 <div className="relative">
-                  <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-4 border-blue-100">
+                  <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-4 border-blue-100 shadow-lg">
                     {photoPreview ? (
                       <img 
                         src={photoPreview} 
@@ -244,20 +212,20 @@ export default function EditProfile() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 text-white text-4xl font-bold">
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-700 text-white text-4xl font-bold">
                         {formData.firstName?.charAt(0) || 'U'}{formData.lastName?.charAt(0) || 'S'}
                       </div>
                     )}
                   </div>
                   {selectedFile && (
-                    <div className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="absolute -bottom-2 -right-2 bg-green-500 text-white rounded-full p-2 shadow-lg">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
                   )}
                 </div>
-                <div className="flex-1">
+                <div className="flex-1 text-center sm:text-left">
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -268,26 +236,26 @@ export default function EditProfile() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md"
                   >
                     Choose Photo
                   </button>
-                  <p className="text-sm text-gray-500 mt-2">
+                  <p className="text-sm text-gray-600 mt-3">
                     JPG, PNG or GIF. Max size 5MB.
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    This photo will appear on your dashboard and member card.
+                  <p className="text-xs text-gray-500 mt-1">
+                    This photo will appear on your dashboard and digital member card.
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Personal Information */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Personal Information</h2>
-              <div className="grid md:grid-cols-2 gap-4">
+            <div className="bg-white rounded-xl shadow-md p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Personal Information</h2>
+              <div className="grid md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     First Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -296,12 +264,13 @@ export default function EditProfile() {
                     value={formData.firstName}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="John"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Last Name <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -310,25 +279,26 @@ export default function EditProfile() {
                     value={formData.lastName}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Doe"
                   />
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Email Address
                   </label>
                   <input
                     type="email"
                     value={userProfile?.email || user?.email || ''}
                     disabled
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500 cursor-not-allowed"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
                   />
                   <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Phone Number
                   </label>
                   <input
@@ -337,101 +307,105 @@ export default function EditProfile() {
                     value={formData.phoneNumber}
                     onChange={handleInputChange}
                     placeholder="+61 XXX XXX XXX"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Major / Field of Study
-                  </label>
-                  <input
-                    type="text"
-                    name="major"
-                    value={formData.major}
-                    onChange={handleInputChange}
-                    placeholder="Computer Science"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Address
-                  </label>
-                  <textarea
-                    name="address"
-                    value={formData.address}
-                    onChange={handleInputChange}
-                    rows={3}
-                    placeholder="Enter your full address"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Professional Information */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Professional Information</h2>
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Current Job Title
-                  </label>
-                  <input
-                    type="text"
-                    name="currentJob"
-                    value={formData.currentJob}
-                    onChange={handleInputChange}
-                    placeholder="Software Engineer"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Company
-                  </label>
-                  <input
-                    type="text"
-                    name="company"
-                    value={formData.company}
-                    onChange={handleInputChange}
-                    placeholder="Company Name"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
+            {/* Address Information */}
+            <div className="bg-white rounded-xl shadow-md p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Address</h2>
+              <div className="grid md:grid-cols-2 gap-6">
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Location
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Street Address
                   </label>
                   <input
                     type="text"
-                    name="location"
-                    value={formData.location}
+                    name="streetAddress"
+                    value={formData.streetAddress}
                     onChange={handleInputChange}
-                    placeholder="Melbourne, VIC"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder="123 Main Street"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Suburb
+                  </label>
+                  <input
+                    type="text"
+                    name="suburb"
+                    value={formData.suburb}
+                    onChange={handleInputChange}
+                    placeholder="Melbourne"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    State
+                  </label>
+                  <select
+                    name="state"
+                    value={formData.state}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  >
+                    <option value="">Select State</option>
+                    <option value="VIC">Victoria (VIC)</option>
+                    <option value="NSW">New South Wales (NSW)</option>
+                    <option value="QLD">Queensland (QLD)</option>
+                    <option value="SA">South Australia (SA)</option>
+                    <option value="WA">Western Australia (WA)</option>
+                    <option value="TAS">Tasmania (TAS)</option>
+                    <option value="NT">Northern Territory (NT)</option>
+                    <option value="ACT">Australian Capital Territory (ACT)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Postcode
+                  </label>
+                  <input
+                    type="text"
+                    name="postcode"
+                    value={formData.postcode}
+                    onChange={handleInputChange}
+                    placeholder="3000"
+                    maxLength={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   />
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <button
                 type="submit"
-                disabled={saving || uploading}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={saving}
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-lg font-bold text-lg transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
               >
-                {saving ? 'Saving...' : uploading ? 'Uploading...' : 'Save Changes'}
+                {saving ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Saving...
+                  </span>
+                ) : 'Save Changes'}
               </button>
               <button
                 type="button"
                 onClick={() => router.back()}
-                className="px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                disabled={saving}
+                className="sm:w-auto px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-lg font-bold text-lg hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>

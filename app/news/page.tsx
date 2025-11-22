@@ -6,129 +6,92 @@ import Link from 'next/link'
 
 export default function News() {
   // News articles data
-  const featuredArticle = {
-    id: 1,
-    title: "NSU alumna awarded prestigious John NSU Scholarship for 2026",
-    description: "NSU University congratulates alumna Georgia Leak, who has been named among 18 Australians awarded 2026 John NSU Scholarships, valued at up to $250,000 over two years for study at Oxford University.",
-    image: "/api/img/800/400",
-    category: "ALUMNI NEWS",
-    url: "/news/john-nsu-scholarship-2026"
-  }
-
   const newsArticles = [
     {
+      id: 1,
+      title: "মেলবোর্নে নর্থ সাউথ ইউনিভার্সিটির অ্যালুমনির পুনর্মিলনী 'সিনেগালা' অনুষ্ঠিত",
+      description: "Watch our community in action as Melbourne NSUers makes headlines on SBS News, showcasing the vibrant NSU alumni network in Australia.",
+      image: "https://i.ytimg.com/vi/ZQmbPMaeV9s/maxresdefault.jpg",
+      category: "MEDIA COVERAGE",
+      url: "https://www.youtube.com/watch?v=ZQmbPMaeV9s",
+      external: true
+    },
+    {
       id: 2,
-      title: "NSU University, Indonesia to welcome undergraduate students in 2026",
-      description: "NSU University is set to grow its Indonesia campus with the introduction of bachelor programs in 2026.",
-      image: "/api/img/400/250",
-      category: "UNIVERSITY NEWS",
-      url: "/news/indonesia-campus-2026"
+      title: "Cinegala 2024 - SBS Bangla Coverage",
+      description: "SBS Bangla covers Melbourne NSUers' spectacular Cinegala event, celebrating Bengali cinema and culture in the heart of Melbourne.",
+      image: "https://images.sbs.com.au/dims4/default/61fbbd2/2147483647/strip/true/crop/7639x4297+0+393/resize/1280x720!/quality/90/?url=http%3A%2F%2Fsbs-au-brightspot.s3.amazonaws.com%2F01%2F19%2F660db93f475a802d1fe93e69c048%2Fdsc-2544.jpg",
+      category: "EVENTS",
+      url: "https://www.sbs.com.au/language/bangla/bn/article/cinagala-noa-blank/yyz99e20x",
+      external: true
     },
     {
       id: 3,
-      title: "The discomfort of difficult discussions – the NSU Brave Conversations Project",
-      description: "Two NSU researchers recognising the difficulties in having civil discussions about sometimes fraught issues, created a program designed to teach students and academics about how to hold these brave conversations.",
-      image: "/api/img/400/250", 
-      category: "ARTS & CULTURE",
-      url: "/news/brave-conversations"
-    },
-    {
-      id: 4,
-      title: "History made! NSU student Claudia Hollingsworth smashes 800m Aussie record in Silesia thriller",
-      description: "NSU University student Claudia Hollingsworth has stormed into the history books at the Silesia Diamond League, becoming the fastest Australian woman to run the 800m sprint.",
-      image: "/api/img/400/250",
-      category: "ALUMNI NEWS", 
-      url: "/news/claudia-record"
-    },
-    {
-      id: 5,
-      title: "NSU University to build Australian-first supercomputer MAVERIC with global technology partners",
-      description: "NSU University is developing and deploying MAVERIC, in collaboration with NVIDIA, Dell Technologies and the CDC Data Centres.",
-      image: "/api/img/400/250",
-      category: "UNIVERSITY NEWS",
-      url: "/news/maveric-supercomputer"
+      title: "Cinegala 2024: Melbourne's NSU Alumni Revisit Golden Age of Cinema",
+      description: "The Daily Star features Melbourne NSUers' Cinegala 2024, a grand celebration revisiting the golden age of Bengali cinema with the alumni community.",
+      image: "https://tds-images.thedailystar.net/sites/default/files/styles/big_202/public/images/2024/11/03/3423d5f2-8a0a-4313-8913-4e66a41c20a7.jpg", 
+      category: "EVENTS",
+      url: "https://www.thedailystar.net/entertainment/theatre-arts/news/cinegala-2024-melbournes-nsu-alumni-revisit-golden-age-cinema-3743526",
+      external: true
     }
   ]
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Hero Section - NSU LIFE */}
-      <section className="relative h-96 overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50">
+      {/* Hero Section - Melbourne NSUers Life */}
+      <div className="relative bg-gradient-to-r from-blue-600 to-blue-700 text-white py-24 overflow-hidden">
         {/* Background Image */}
-        <div className="absolute inset-0">
-          <Image
-            src="/api/img/1200/400"
-            alt="NSU Campus Life"
-            fill
-            className="object-cover"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent"></div>
-        </div>
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/assets/images/news/convocation.jpg')" }}
+        ></div>
+        {/* Dark Overlay for Text Readability */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/75 via-blue-800/70 to-blue-900/75"></div>
         
         {/* Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center">
-          <div className="text-white max-w-2xl">
-            <h1 className="text-4xl lg:text-5xl font-bold mb-4">NSU LIFE</h1>
-            <p className="text-xl mb-6 leading-relaxed">
-              Research and insight from NSU and our global alumni and donor community.
-            </p>
-            <Link 
-              href="/about"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 font-semibold transition-colors"
-            >
-              Read NSU Life
-            </Link>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <h1 className="text-5xl md:text-6xl font-bold mb-4 animate-fade-in-up text-white drop-shadow-lg">
+            Melbourne NSUers Life
+          </h1>
+          <p className="text-xl md:text-2xl mb-8 opacity-90 animate-fade-in-up animation-delay-200 drop-shadow-md max-w-4xl mx-auto">
+            Celebrating our community's achievements, milestones, and inspiring stories. Stay connected with featured news, success stories, and important announcements from Melbourne NSUers.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
+              <span className="font-semibold">Featured News</span>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
+              <span className="font-semibold">Success Stories</span>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm px-6 py-3 rounded-full border border-white/30">
+              <span className="font-semibold">Community Events</span>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Latest News Section */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">Latest news</h2>
+            <h2 className="text-4xl font-bold text-gray-900 mb-6">Latest News & Updates</h2>
             <p className="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto">
-              From research breakthroughs and notable visitors, to remarkable achievements by alumni - this is the spot to stay updated.
-              Not hearing from us? <Link href="/contact" className="text-blue-600 underline">Update your details.</Link>
+              From community achievements and featured events, to inspiring success stories and important announcements - stay connected with what's happening in our Melbourne NSUers community.
+              Want to stay updated? <Link href="/contact" className="text-blue-600 underline hover:text-blue-800">Subscribe to our newsletter.</Link>
             </p>
-          </div>
-
-          {/* Featured Article */}
-          <div className="mb-16">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-              <div>
-                <Image
-                  src={featuredArticle.image}
-                  alt={featuredArticle.title}
-                  width={600}
-                  height={400}
-                  className="w-full h-80 object-cover rounded-lg"
-                />
-              </div>
-              <div>
-                <div className="mb-4">
-                  <span className="text-sm text-gray-500 uppercase tracking-wide font-medium">
-                    {featuredArticle.category}
-                  </span>
-                </div>
-                <h3 className="text-3xl font-bold text-blue-600 mb-4 hover:text-blue-800 transition-colors cursor-pointer">
-                  <Link href={featuredArticle.url}>
-                    {featuredArticle.title}
-                  </Link>
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  {featuredArticle.description}
-                </p>
-              </div>
-            </div>
           </div>
 
           {/* News Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {newsArticles.map((article) => (
-              <div key={article.id} className="group cursor-pointer">
+              <a 
+                key={article.id}
+                href={article.url}
+                target={article.external ? "_blank" : "_self"}
+                rel={article.external ? "noopener noreferrer" : ""}
+                className="group cursor-pointer block"
+              >
                 <div className="mb-4 overflow-hidden rounded-lg">
                   <Image
                     src={article.image}
@@ -146,15 +109,13 @@ export default function News() {
                 </div>
                 
                 <h3 className="text-xl font-bold text-blue-600 mb-3 group-hover:text-blue-800 transition-colors leading-tight">
-                  <Link href={article.url}>
-                    {article.title}
-                  </Link>
+                  {article.title}
                 </h3>
                 
                 <p className="text-gray-600 leading-relaxed text-sm">
                   {article.description}
                 </p>
-              </div>
+              </a>
             ))}
           </div>
         </div>

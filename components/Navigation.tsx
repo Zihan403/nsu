@@ -95,7 +95,7 @@ export default function Navigation() {
                       />
                     ) : (
                       <span className="text-xs font-bold text-white">
-                        {userProfile?.firstName?.charAt(0) || 'U'}{userProfile?.lastName?.charAt(0) || 'S'}
+                        {userProfile?.firstName?.charAt(0) || ''}{userProfile?.lastName?.charAt(0) || ''}
                       </span>
                     )}
                   </div>

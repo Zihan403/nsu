@@ -25,12 +25,7 @@
   --gradient-card: linear-gradient(to bottom right, #eff6ff, #e0f2fe);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* Theme configuration handled via CSS variables above */
 
 @media (prefers-color-scheme: dark) {
   :root {

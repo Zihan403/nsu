@@ -64,46 +64,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         if (user) {
           setUser(user)
-          // Fetch user profile from Firestore
-          try {
-            const profileDoc = await getDoc(doc(db, 'users', user.uid))
-            if (profileDoc.exists()) {
-              setUserProfile(profileDoc.data() as UserProfile)
-            } else {
-              // Create profile if it doesn't exist
-              const newProfile: any = {
-                uid: user.uid,
-                email: user.email!,
-                displayName: user.displayName || user.email!.split('@')[0],
-                membershipTier: 'basic',
-                joinedAt: new Date()
-              }
-
-              // Only add photoURL if it exists
-              if (user.photoURL) {
-                newProfile.photoURL = user.photoURL
-              }
-
-              // Remove any undefined values
-              Object.keys(newProfile).forEach(key => {
-                if (newProfile[key] === undefined) {
-                  delete newProfile[key]
+          // Fetch user profile from Firestore with retry logic
+          let retries = 3
+          let profileFetched = false
+          
+          while (retries > 0 && !profileFetched) {
+            try {
+              const profileDoc = await getDoc(doc(db, 'users', user.uid))
+              if (profileDoc.exists()) {
+                setUserProfile(profileDoc.data() as UserProfile)
+                profileFetched = true
+              } else {
+                // Create profile if it doesn't exist
+                const newProfile: any = {
+                  uid: user.uid,
+                  email: user.email!,
+                  displayName: user.displayName || user.email!.split('@')[0],
+                  membershipTier: 'basic',
+                  joinedAt: new Date()
                 }
-              })
 
-              await setDoc(doc(db, 'users', user.uid), newProfile)
-              setUserProfile(newProfile)
+                // Only add photoURL if it exists
+                if (user.photoURL) {
+                  newProfile.photoURL = user.photoURL
+                }
+
+                // Remove any undefined values
+                Object.keys(newProfile).forEach(key => {
+                  if (newProfile[key] === undefined) {
+                    delete newProfile[key]
+                  }
+                })
+
+                await setDoc(doc(db, 'users', user.uid), newProfile)
+                setUserProfile(newProfile)
+                profileFetched = true
+              }
+            } catch (firestoreError: any) {
+              console.error(`Error fetching user profile (attempt ${4 - retries}/3):`, firestoreError)
+              retries--
+              
+              if (retries > 0) {
+                // Wait before retrying (exponential backoff)
+                await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries)))
+              } else {
+                // If all retries fail, create a minimal profile from auth user
+                console.warn('Using fallback profile data due to connection issues')
+                setUserProfile({
+                  uid: user.uid,
+                  email: user.email!,
+                  displayName: user.displayName || user.email!.split('@')[0],
+                  membershipTier: 'basic',
+                  joinedAt: new Date()
+                })
+              }
             }
-          } catch (firestoreError) {
-            console.error('Error fetching user profile:', firestoreError)
-            // If Firestore fails, create a minimal profile from auth user
-            setUserProfile({
-              uid: user.uid,
-              email: user.email!,
-              displayName: user.displayName || user.email!.split('@')[0],
-              membershipTier: 'basic',
-              joinedAt: new Date()
-            })
           }
         } else {
           setUser(null)
@@ -213,11 +228,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const updateUserProfile = async (data: Partial<UserProfile>) => {
-    if (!user) return
+    if (!user) throw new Error('No user logged in')
     
-    await setDoc(doc(db, 'users', user.uid), data, { merge: true })
-    const updatedProfile = { ...userProfile, ...data } as UserProfile
-    setUserProfile(updatedProfile)
+    try {
+      // Try to update with retry logic
+      let retries = 3
+      let updated = false
+      
+      while (retries > 0 && !updated) {
+        try {
+          await setDoc(doc(db, 'users', user.uid), data, { merge: true })
+          const updatedProfile = { ...userProfile, ...data } as UserProfile
+          setUserProfile(updatedProfile)
+          updated = true
+        } catch (error: any) {
+          console.error(`Error updating profile (attempt ${4 - retries}/3):`, error)
+          retries--
+          
+          if (retries > 0) {
+            // Wait before retrying
+            await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries)))
+          } else {
+            throw new Error('Failed to update profile. Please check your internet connection and try again.')
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      throw error
+    }
   }
 
   const sendEmailVerificationFunc = async () => {
