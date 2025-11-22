@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 
 export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -77,16 +76,16 @@ export default function Navigation() {
             </Link>
           </div>
 
-          {/* Desktop CTA - Join Us or Profile */}
+          {/* Desktop CTA - Join Us or Dashboard Dropdown */}
           <div className="hidden md:flex items-center">
             {user && user.emailVerified ? (
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                  className="flex items-center gap-3 border-2 border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 px-4 py-2 font-medium text-sm uppercase tracking-wide transition-all rounded"
+                  className="flex items-center gap-2 border border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 px-3 py-1.5 font-medium text-xs uppercase tracking-wide transition-all rounded"
                 >
                   {/* Profile Image or Initials */}
-                  <div className="w-7 h-7 rounded-full overflow-hidden bg-blue-500 flex items-center justify-center border border-blue-400">
+                  <div className="w-6 h-6 rounded-full overflow-hidden bg-blue-500 flex items-center justify-center border border-blue-400 flex-shrink-0">
                     {userProfile?.photoURL ? (
                       <img 
                         src={userProfile.photoURL} 
@@ -99,9 +98,9 @@ export default function Navigation() {
                       </span>
                     )}
                   </div>
-                  <span>Dashboard</span>
+                  <span className="hidden sm:inline">Dashboard</span>
                   <svg 
-                    className={`w-4 h-4 transition-transform ${isProfileDropdownOpen ? 'rotate-180' : ''}`} 
+                    className={`w-3 h-3 transition-transform ${isProfileDropdownOpen ? 'rotate-180' : ''}`} 
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
@@ -112,63 +111,29 @@ export default function Navigation() {
 
                 {/* Dropdown Menu */}
                 {isProfileDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-2xl border border-gray-200 py-2 z-50">
-                    {/* User Info */}
-                    <div className="px-4 py-3 border-b border-gray-200">
-                      <p className="text-sm font-semibold text-gray-900">
-                        {userProfile?.firstName && userProfile?.lastName 
-                          ? `${userProfile.firstName} ${userProfile.lastName}`
-                          : userProfile?.displayName || 'NSU Member'}
-                      </p>
-                      <p className="text-xs text-gray-500">{userProfile?.email || user?.email}</p>
-                      {userProfile?.memberId && (
-                        <p className="text-xs text-blue-600 font-mono mt-1">ID: {userProfile.memberId}</p>
-                      )}
-                    </div>
-
-                    {/* Quick Actions */}
-                    <div className="py-1">
-                      <Link
-                        href="/dashboard"
-                        onClick={() => setIsProfileDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
-                      >
-                        <span className="text-lg">📊</span>
-                        <span>Dashboard</span>
-                      </Link>
-                      <Link
-                        href="/profile"
-                        onClick={() => setIsProfileDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
-                      >
-                        <span className="text-lg">👤</span>
-                        <span>Edit Profile</span>
-                      </Link>
-                      <Link
-                        href="/events"
-                        onClick={() => setIsProfileDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
-                      >
-                        <span className="text-lg">📅</span>
-                        <span>My Events</span>
-                      </Link>
-                      <Link
-                        href="/benefits"
-                        onClick={() => setIsProfileDropdownOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
-                      >
-                        <span className="text-lg">🎁</span>
-                        <span>Benefits</span>
-                      </Link>
-                    </div>
-
-                    {/* Sign Out */}
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-1 z-50">
+                    <Link
+                      href="/dashboard"
+                      onClick={() => setIsProfileDropdownOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
+                    >
+                      <span>📊</span>
+                      <span>Dashboard</span>
+                    </Link>
+                    <Link
+                      href="/profile"
+                      onClick={() => setIsProfileDropdownOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
+                    >
+                      <span>👤</span>
+                      <span>Edit Profile</span>
+                    </Link>
                     <div className="border-t border-gray-200 py-1">
                       <button
                         onClick={handleSignOut}
                         className="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
                       >
-                        <span className="text-lg">🚪</span>
+                        <span>🚪</span>
                         <span>Sign Out</span>
                       </button>
                     </div>
@@ -230,40 +195,10 @@ export default function Navigation() {
               Contact
             </Link>
             
-            {/* Mobile CTA - Profile or Join */}
+            {/* Mobile CTA - Dashboard Dropdown or Join */}
             <div className="pt-4 border-t border-gray-800">
               {user && user.emailVerified ? (
                 <div className="space-y-2">
-                  {/* User Info */}
-                  <div className="bg-blue-900/30 rounded-lg p-3 mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full overflow-hidden bg-blue-500 flex items-center justify-center border-2 border-white/30">
-                        {userProfile?.photoURL ? (
-                          <img 
-                            src={userProfile.photoURL} 
-                            alt="Profile" 
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <span className="text-sm font-bold text-white">
-                            {userProfile?.firstName?.charAt(0) || 'U'}{userProfile?.lastName?.charAt(0) || 'S'}
-                          </span>
-                        )}
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-white">
-                          {userProfile?.firstName && userProfile?.lastName 
-                            ? `${userProfile.firstName} ${userProfile.lastName}`
-                            : userProfile?.displayName || 'NSU Member'}
-                        </p>
-                        {userProfile?.memberId && (
-                          <p className="text-xs text-blue-300 font-mono">ID: {userProfile.memberId}</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Quick Links */}
                   <Link 
                     href="/dashboard"
                     onClick={() => setIsMenuOpen(false)}
@@ -280,16 +215,6 @@ export default function Navigation() {
                     <span>👤</span>
                     <span>Edit Profile</span>
                   </Link>
-                  <Link 
-                    href="/events"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center gap-3 text-gray-300 hover:text-white py-2 text-sm"
-                  >
-                    <span>📅</span>
-                    <span>My Events</span>
-                  </Link>
-                  
-                  {/* Sign Out */}
                   <button
                     onClick={handleSignOut}
                     className="flex items-center gap-3 text-red-400 hover:text-red-300 py-2 text-sm w-full text-left"
