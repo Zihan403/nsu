@@ -15,42 +15,52 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Verify Firebase config is loaded
-if (!firebaseConfig.projectId) {
+// Verify Firebase config is loaded (skip during build)
+if (!firebaseConfig.projectId && process.env.NODE_ENV !== 'development' && process.env.VERCEL !== '1' && process.env.RAILWAY !== '1') {
   console.error('🔴 FATAL: Firebase configuration not loaded! Check .env.local file')
   console.log('Expected env vars: NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_PROJECT_ID, etc.')
 }
 
-// Initialize Firebase (only once)
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-console.log('✅ Firebase app initialized:', firebaseConfig.projectId)
+// Initialize Firebase (only once, and only if config is available)
+let app;
+let auth;
+let db;
+let storage;
 
-const auth = getAuth(app);
-
-// Enable MFA
-auth.settings.appVerificationDisabledForTesting = false;
-
-// Initialize Firestore with optimized settings
-const db = getFirestore(app);
-
-// Enable offline persistence (only in browser environment)
-if (typeof window !== 'undefined') {
-  enableIndexedDbPersistence(db)
-    .then(() => {
-      console.log('✅ Firestore offline persistence enabled')
-    })
-    .catch((err) => {
-      if (err.code === 'failed-precondition') {
-        console.warn('⚠️ Firebase persistence: Multiple tabs open - persistence disabled in this tab')
-      } else if (err.code === 'unimplemented') {
-        console.warn('⚠️ Firebase persistence: Browser does not support IndexedDB')
-      } else {
-        console.warn('⚠️ Firebase persistence error:', err)
-      }
-    });
+try {
+  if (firebaseConfig.projectId && firebaseConfig.apiKey) {
+    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+    console.log('✅ Firebase app initialized:', firebaseConfig.projectId);
+    
+    auth = getAuth(app);
+    auth.settings.appVerificationDisabledForTesting = false;
+    
+    db = getFirestore(app);
+    
+    // Enable offline persistence (only in browser environment)
+    if (typeof window !== 'undefined') {
+      enableIndexedDbPersistence(db)
+        .then(() => {
+          console.log('✅ Firestore offline persistence enabled');
+        })
+        .catch((err) => {
+          if (err.code === 'failed-precondition') {
+            console.warn('⚠️ Firebase persistence: Multiple tabs open');
+          } else if (err.code === 'unimplemented') {
+            console.warn('⚠️ Firebase persistence: Browser does not support IndexedDB');
+          } else {
+            console.warn('⚠️ Firebase persistence error:', err);
+          }
+        });
+    }
+    
+    storage = getStorage(app);
+  } else {
+    console.warn('⚠️ Firebase config incomplete - Firebase will not be initialized');
+  }
+} catch (error) {
+  console.error('Error initializing Firebase:', error);
 }
-
-const storage = getStorage(app);
 
 console.log('🚀 Firebase configuration loaded successfully')
 console.log('   - Project:', firebaseConfig.projectId)
