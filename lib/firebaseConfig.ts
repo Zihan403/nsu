@@ -1,8 +1,8 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp, getApps } from "firebase/app";
-import { getAuth } from "firebase/auth";
-import { getFirestore, enableIndexedDbPersistence } from "firebase/firestore";
-import { getStorage } from "firebase/storage";
+import { initializeApp, getApps, FirebaseApp } from "firebase/app";
+import { getAuth, Auth } from "firebase/auth";
+import { getFirestore, enableIndexedDbPersistence, Firestore } from "firebase/firestore";
+import { getStorage, FirebaseStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -22,10 +22,10 @@ if (!firebaseConfig.projectId && process.env.NODE_ENV !== 'development' && proce
 }
 
 // Initialize Firebase (only once, and only if config is available)
-let app;
-let auth;
-let db;
-let storage;
+let app: FirebaseApp | undefined;
+let auth: Auth | undefined;
+let db: Firestore | undefined;
+let storage: FirebaseStorage | undefined;
 
 try {
   if (firebaseConfig.projectId && firebaseConfig.apiKey) {
