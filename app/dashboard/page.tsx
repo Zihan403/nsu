@@ -21,12 +21,11 @@ export default function Dashboard() {
   const benefits = [
     {
       id: 1,
-      title: 'Tax Services',
+      title: 'The Hopkins Group',
       category: 'Financial Services',
       discount: '10% OFF',
-      code: 'NSUTAX10',
-      description: 'Professional tax advisory services',
-      validUntil: 'Dec 31, 2025',
+      code: 'HOPKINS10',
+      description: 'Financial planning & accounting',
       icon: '💼',
       gradient: 'from-blue-500 to-blue-600',
       lightBg: 'bg-blue-50',
@@ -35,30 +34,28 @@ export default function Dashboard() {
     },
     {
       id: 2,
-      title: 'MIDAS',
-      category: 'Automotive',
-      discount: 'COMING SOON',
-      code: 'MIDAS-SOON',
-      description: 'Car servicing & diagnostics',
-      validUntil: 'Coming soon',
-      icon: '🚗',
-      gradient: 'from-purple-500 to-purple-600',
-      lightBg: 'bg-purple-50',
-      textColor: 'text-purple-600',
-      status: 'coming-soon'
+      title: 'RRAE Pty Ltd',
+      category: 'Subway Skye',
+      discount: '10% OFF',
+      code: 'SUBWAY10',
+      description: 'Exclusive in-store discount',
+      icon: '🥪',
+      gradient: 'from-green-500 to-green-600',
+      lightBg: 'bg-green-50',
+      textColor: 'text-green-600',
+      status: 'active'
     },
     {
       id: 3,
-      title: "Dining Perks",
-      category: 'Food & Dining',
+      title: "More Partners",
+      category: 'Coming Soon',
       discount: 'COMING SOON',
-      code: 'DINING-SOON',
-      description: 'Exclusive dining benefits',
-      validUntil: 'Coming soon',
-      icon: '🍔',
-      gradient: 'from-pink-500 to-pink-600',
-      lightBg: 'bg-pink-50',
-      textColor: 'text-pink-600',
+      code: 'SOON',
+      description: 'Exciting new partnerships',
+      icon: '🎉',
+      gradient: 'from-purple-500 to-purple-600',
+      lightBg: 'bg-purple-50',
+      textColor: 'text-purple-600',
       status: 'coming-soon'
     }
   ]
@@ -143,21 +140,25 @@ export default function Dashboard() {
         <div className="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white py-6 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                  <span className="text-2xl">👤</span>
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold">Welcome back, {userProfile?.displayName || userProfile?.firstName || 'Member'}!</h1>
-                  <p className="text-sm text-blue-100">Member since {userProfile?.joinedAt ? new Date(userProfile.joinedAt).getFullYear() : new Date().getFullYear()}</p>
-                </div>
+              <div>
+                <h1 className="text-xl font-bold">Welcome back, {userProfile?.displayName || userProfile?.firstName || 'Member'}!</h1>
               </div>
-              <button
-                onClick={handleLogOut}
-                className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg border border-white/30 transition-all text-sm"
-              >
-                Sign Out
-              </button>
+              <div className="flex items-center gap-3">
+                {userProfile?.isAdmin && (
+                  <Link
+                    href="/admin/panel"
+                    className="bg-yellow-500/20 hover:bg-yellow-500/30 backdrop-blur-sm text-yellow-100 px-4 py-2 rounded-lg border border-yellow-400/30 transition-all text-sm font-semibold"
+                  >
+                    🔐 Admin Panel
+                  </Link>
+                )}
+                <button
+                  onClick={handleLogOut}
+                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg border border-white/30 transition-all text-sm"
+                >
+                  Sign Out
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -249,10 +250,6 @@ export default function Dashboard() {
                                   <div className="text-xs text-white/70">Check back soon for details</div>
                                 </div>
                               )}
-                              
-                              <div className="text-xs text-white/60 mt-1.5">
-                                Valid: {benefit.validUntil}
-                              </div>
                             </div>
                           </div>
                         </div>
@@ -395,20 +392,11 @@ export default function Dashboard() {
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-between pt-4 border-t border-white/20">
+                    <div className="flex items-center justify-center pt-4 border-t border-white/20">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                        <span className="text-xs text-blue-200">Member since {userProfile?.joinedAt ? new Date(userProfile.joinedAt).getFullYear() : new Date().getFullYear()}</span>
+                        <span className="text-xs text-blue-200 font-semibold">Active Member</span>
                       </div>
-                      <button 
-                        onClick={downloadMemberCard}
-                        className="bg-white text-blue-600 px-5 py-2 rounded-lg text-sm font-semibold hover:bg-blue-50 transition-colors shadow-lg flex items-center gap-2"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                        </svg>
-                        Download
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -418,7 +406,7 @@ export default function Dashboard() {
             {/* Sidebar - Activity Feed & Profile */}
             <div className="space-y-6">
               {/* Profile Summary */}
-              <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-blue-600">
+              <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-slate-900">
                 <div className="text-center mb-4">
                   <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-full overflow-hidden border-4 border-blue-100 mx-auto mb-3">
                     {userProfile?.photoURL ? (
@@ -461,7 +449,7 @@ export default function Dashboard() {
                 
                 <Link
                   href="/profile"
-                  className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold"
+                  className="block w-full text-center bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white py-2 rounded-lg hover:opacity-90 transition-all text-sm font-semibold"
                 >
                   Edit Profile
                 </Link>
@@ -469,30 +457,18 @@ export default function Dashboard() {
 
               {/* Quick Actions - Bullet List Style */}
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="font-bold text-gray-900 mb-4">⚡ Quick Actions</h3>
+                <h3 className="font-bold text-gray-900 mb-4">Quick Actions</h3>
                 <div className="space-y-3">
                   <Link href="/benefits" className="flex items-center gap-3 text-sm text-gray-700 hover:text-blue-600 transition-colors group">
-                    <span className="text-blue-600 group-hover:scale-110 transition-transform">🎫</span>
                     <span className="font-medium">View All Benefits</span>
                   </Link>
                   <Link href="/events" className="flex items-center gap-3 text-sm text-gray-700 hover:text-cyan-600 transition-colors group">
-                    <span className="text-cyan-600 group-hover:scale-110 transition-transform">📅</span>
                     <span className="font-medium">Browse Events</span>
                   </Link>
-                  <Link href="/directory" className="flex items-center gap-3 text-sm text-gray-700 hover:text-indigo-600 transition-colors group">
-                    <span className="text-indigo-600 group-hover:scale-110 transition-transform">👥</span>
-                    <span className="font-medium">Alumni Directory</span>
-                  </Link>
-                  <Link href="#" className="flex items-center gap-3 text-sm text-gray-700 hover:text-teal-600 transition-colors group">
-                    <span className="text-teal-600 group-hover:scale-110 transition-transform">💼</span>
-                    <span className="font-medium">Job Board</span>
-                  </Link>
-                  <Link href="#" className="flex items-center gap-3 text-sm text-gray-700 hover:text-sky-600 transition-colors group">
-                    <span className="text-sky-600 group-hover:scale-110 transition-transform">🤝</span>
-                    <span className="font-medium">Find a Mentor</span>
+                  <Link href="/contact" className="flex items-center gap-3 text-sm text-gray-700 hover:text-green-600 transition-colors group">
+                    <span className="font-medium">Contact Us</span>
                   </Link>
                   <Link href="/benefits/giving-back" className="flex items-center gap-3 text-sm text-gray-700 hover:text-red-600 transition-colors group">
-                    <span className="text-red-600 group-hover:scale-110 transition-transform">❤️</span>
                     <span className="font-medium">Give Back</span>
                   </Link>
                 </div>

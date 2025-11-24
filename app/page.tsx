@@ -3,9 +3,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { db } from '@/lib/firebaseConfig'
+import { collection, getDocs, query, orderBy, limit } from 'firebase/firestore'
+
+interface Event {
+  id: string
+  date: string
+  time: string
+  title: string
+  description: string
+  location: string
+  locationUrl?: string
+  category: string
+  image: string
+}
 
 export default function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [upcomingEvent, setUpcomingEvent] = useState<Event | null>(null);
+  const [loadingEvent, setLoadingEvent] = useState(true);
 
   const featuredAlumni = [
     {
@@ -41,6 +57,47 @@ export default function Home() {
     return () => clearInterval(timer);
   }, [featuredAlumni.length]);
 
+  // Fetch latest upcoming event
+  useEffect(() => {
+    const fetchLatestEvent = async () => {
+      try {
+        const eventsQuery = query(
+          collection(db, 'events'),
+          orderBy('date', 'desc'),
+          limit(1)
+        );
+        const querySnapshot = await getDocs(eventsQuery);
+        
+        if (!querySnapshot.empty) {
+          const doc = querySnapshot.docs[0];
+          setUpcomingEvent({
+            id: doc.id,
+            ...doc.data()
+          } as Event);
+        }
+      } catch (error) {
+        console.error('Error fetching latest event:', error);
+      } finally {
+        setLoadingEvent(false);
+      }
+    };
+
+    fetchLatestEvent();
+  }, []);
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  };
+
+  const formatTime = (timeStr: string) => {
+    const [hours, minutes] = timeStr.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const formattedHour = hour % 12 || 12;
+    return `${formattedHour}:${minutes} ${ampm}`;
+  };
+
   return (
     <div>
       {/* Hero Section with Background Image */}
@@ -69,12 +126,6 @@ export default function Home() {
             Beyond Borders, Beyond Generations — Join Melbourne's vibrant NSU alumni community for networking, 
             career growth, and unforgettable events.
           </p>
-          <Link 
-            href="/events"
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg text-lg transition-all transform hover:scale-105 shadow-xl animate-fade-in-up animation-delay-400"
-          >
-            FIND AN EVENT
-          </Link>
         </div>
       </section>
 
@@ -166,62 +217,78 @@ export default function Home() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-0 mb-8">
-            {/* Event Image - Left Side */}
-            <div className="lg:col-span-2 h-56 lg:h-64 overflow-hidden">
-              <Image
-                src="/assets/images/events/reconnect.jpg"
-                alt="Reconnect 2025"
-                width={400}
-                height={300}
-                className="w-full h-full object-cover"
-              />
+          {loadingEvent ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
             </div>
+          ) : upcomingEvent ? (
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-0 mb-8">
+              {/* Event Image - Left Side */}
+              <div className="lg:col-span-2 h-56 lg:h-64 overflow-hidden">
+                <Image
+                  src={upcomingEvent.image}
+                  alt={upcomingEvent.title}
+                  width={400}
+                  height={300}
+                  className="w-full h-full object-cover"
+                />
+              </div>
 
-            {/* Event Content - Right Side */}
-            <div className="lg:col-span-3 bg-white border-b-2 border-r-2 border-t-2 border-gray-200 p-5 lg:p-6">
-              {/* Date and Time Header */}
-              <div className="mb-2 pb-2 border-b border-gray-200">
-                <div className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
-                  📅 November 24, 2025 • 6:00 PM
+              {/* Event Content - Right Side */}
+              <div className="lg:col-span-3 bg-white border-b-2 border-r-2 border-t-2 border-gray-200 p-5 lg:p-6">
+                {/* Date and Time Header */}
+                <div className="mb-2 pb-2 border-b border-gray-200">
+                  <div className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
+                    📅 {formatDate(upcomingEvent.date)} • {formatTime(upcomingEvent.time)}
+                  </div>
+                </div>
+                
+                {/* Title */}
+                <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2 leading-tight">
+                  {upcomingEvent.title}
+                </h3>
+                
+                {/* Location */}
+                <div className="mb-2">
+                  {upcomingEvent.locationUrl ? (
+                    <a 
+                      href={upcomingEvent.locationUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs font-semibold text-gray-700 hover:text-blue-600 transition-colors"
+                    >
+                      📍 {upcomingEvent.location}
+                    </a>
+                  ) : (
+                    <div className="text-xs font-semibold text-gray-700">
+                      📍 {upcomingEvent.location}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Description */}
+                <div className="mb-4">
+                  <p className="text-gray-600 leading-relaxed text-xs line-clamp-3">
+                    {upcomingEvent.description}
+                  </p>
+                </div>
+                
+                {/* Action Button */}
+                <div className="flex justify-end">
+                  <Link
+                    href="/events"
+                    className="bg-gradient-to-r from-blue-900 to-slate-900 hover:from-blue-800 hover:to-slate-800 text-white font-semibold px-6 py-2 text-xs transition-colors"
+                  >
+                    LEARN MORE
+                  </Link>
                 </div>
               </div>
-              
-              {/* Title */}
-              <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2 leading-tight">
-                Reconnect 2025: Strengthening the NSU Bond
-              </h3>
-              
-              {/* Location */}
-              <div className="mb-2">
-                <a 
-                  href="https://www.facebook.com/share/1Gyav2U2zR/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs font-semibold text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  📍 Community Hub at The Dock
-                </a>
-              </div>
-              
-              {/* Description */}
-              <div className="mb-4">
-                <p className="text-gray-600 leading-relaxed text-xs">
-                  Join Melbourne NSUers for our signature annual event! Reconnect with fellow alumni, celebrate our shared legacy, and strengthen the bonds that make our community special.
-                </p>
-              </div>
-              
-              {/* Action Button */}
-              <div className="flex justify-end">
-                <Link
-                  href="/events"
-                  className="bg-gradient-to-r from-blue-900 to-slate-900 hover:from-blue-800 hover:to-slate-800 text-white font-semibold px-6 py-2 text-xs transition-colors"
-                >
-                  LEARN MORE
-                </Link>
-              </div>
             </div>
-          </div>
+          ) : (
+            <div className="text-center py-12 text-gray-500">
+              <p className="text-lg">No upcoming events at the moment. Check back soon!</p>
+            </div>
+          )}
 
           <div className="text-center">
             <Link 

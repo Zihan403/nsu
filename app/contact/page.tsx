@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { collection, addDoc, Timestamp } from 'firebase/firestore'
+import { db } from '../../lib/firebaseConfig'
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -11,20 +13,39 @@ export default function Contact() {
   })
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
+    setError('')
     
-    // Simulate form submission
-    setTimeout(() => {
+    try {
+      if (!db) {
+        throw new Error('Database not initialized')
+      }
+
+      // Save to Firestore
+      await addDoc(collection(db, 'contactMessages'), {
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+        createdAt: Timestamp.now(),
+        status: 'unread'
+      })
+
       setSubmitting(false)
       setSubmitted(true)
       setFormData({ name: '', email: '', subject: '', message: '' })
       
       // Reset success message after 5 seconds
       setTimeout(() => setSubmitted(false), 5000)
-    }, 1500)
+    } catch (err) {
+      console.error('Error submitting form:', err)
+      setError('Failed to send message. Please try again.')
+      setSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -68,7 +89,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">Email</h3>
-                  <a href="mailto:melbnsuers@gmail.com" className="text-blue-600 hover:text-blue-700 transition-colors">
+                  <a href="mailto:melbnsuers@gmail.com" className="text-slate-700 hover:text-blue-900 transition-colors">
                     melbnsuers@gmail.com
                   </a>
                 </div>
@@ -83,7 +104,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">Facebook</h3>
-                  <a href="https://www.facebook.com/MelbourneNSUers" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 transition-colors">
+                  <a href="https://www.facebook.com/MelbourneNSUers" target="_blank" rel="noopener noreferrer" className="text-slate-700 hover:text-blue-900 transition-colors">
                     facebook.com/MelbourneNSUers
                   </a>
                 </div>
@@ -98,7 +119,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">Instagram</h3>
-                  <a href="https://www.instagram.com/melbournensuers?igsh=MWN1MGVubHR4Njd4" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 transition-colors">
+                  <a href="https://www.instagram.com/melbournensuers?igsh=MWN1MGVubHR4Njd4" target="_blank" rel="noopener noreferrer" className="text-slate-700 hover:text-blue-900 transition-colors">
                     @melbournensuers
                   </a>
                 </div>
@@ -135,6 +156,17 @@ export default function Contact() {
                 </div>
               )}
 
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                  <div className="flex items-center gap-2 text-red-800">
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                    <span className="font-semibold">{error}</span>
+                  </div>
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Name */}
                 <div>
@@ -148,7 +180,7 @@ export default function Contact() {
                     value={formData.name}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
                     placeholder="John Doe"
                   />
                 </div>
@@ -165,7 +197,7 @@ export default function Contact() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
                     placeholder="john@example.com"
                   />
                 </div>
@@ -181,7 +213,7 @@ export default function Contact() {
                     value={formData.subject}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900"
                   >
                     <option value="">Select a subject...</option>
                     <option value="general">General Inquiry</option>
@@ -206,7 +238,7 @@ export default function Contact() {
                     onChange={handleChange}
                     required
                     rows={6}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none text-gray-900 placeholder-gray-400"
                     placeholder="Tell us how we can help you..."
                   />
                 </div>
@@ -215,7 +247,7 @@ export default function Contact() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-800 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+                  className="w-full bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white py-4 rounded-lg font-semibold hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {submitting ? (
                     <>

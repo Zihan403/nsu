@@ -154,12 +154,12 @@ export default function AdminPanel() {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div className="text-6xl mb-4">🔒</div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h1>
-          <p className="text-gray-600 mb-4">You don't have permission to access the admin panel.</p>
-          <Link href="/dashboard" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+          <h1 className="text-2xl font-bold text-white mb-2">Access Denied</h1>
+          <p className="text-gray-300 mb-4">You don't have permission to access the admin panel.</p>
+          <Link href="/dashboard" className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-4 py-2 rounded-lg hover:from-blue-700 hover:to-cyan-700">
             Back to Dashboard
           </Link>
         </div>
@@ -169,74 +169,88 @@ export default function AdminPanel() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Header */}
-          <div className="bg-gradient-to-r from-red-600 to-pink-600 rounded-2xl p-8 mb-8 text-white">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 mb-8 text-white">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold mb-2">Admin Panel</h1>
-                <p className="text-red-100">Manage {users.length} registered users</p>
+                <p className="text-blue-200">Manage {users.length} registered users</p>
               </div>
-              <Link 
-                href="/dashboard"
-                className="bg-white/20 text-white px-4 py-2 rounded-lg hover:bg-white/30 transition-colors"
-              >
-                ← Back to Dashboard
-              </Link>
+              <div className="flex gap-3">
+                <Link
+                  href="/admin/events"
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-3 rounded-lg transition-all font-semibold"
+                >
+                  📅 Manage Events
+                </Link>
+                <Link
+                  href="/admin/messages"
+                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-3 rounded-lg transition-all font-semibold"
+                >
+                  📧 Contact Messages
+                </Link>
+                <Link
+                  href="/dashboard"
+                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-lg border border-blue-400/30 transition-all font-semibold"
+                >
+                  👤 Member Dashboard
+                </Link>
+              </div>
             </div>
           </div>
 
           {/* Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white rounded-xl shadow-lg p-6 text-center">
-              <div className="text-2xl font-bold text-blue-600 mb-2">{users.length}</div>
-              <div className="text-gray-600 text-sm">Total Users</div>
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-6 text-center">
+              <div className="text-2xl font-bold text-blue-400 mb-2">{users.length}</div>
+              <div className="text-gray-300 text-sm">Total Users</div>
             </div>
-            <div className="bg-white rounded-xl shadow-lg p-6 text-center">
-              <div className="text-2xl font-bold text-green-600 mb-2">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-6 text-center">
+              <div className="text-2xl font-bold text-green-400 mb-2">
                 {users.filter(u => u.emailVerified).length}
               </div>
-              <div className="text-gray-600 text-sm">Verified Users</div>
+              <div className="text-gray-300 text-sm">Verified Users</div>
             </div>
-            <div className="bg-white rounded-xl shadow-lg p-6 text-center">
-              <div className="text-2xl font-bold text-purple-600 mb-2">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-6 text-center">
+              <div className="text-2xl font-bold text-cyan-400 mb-2">
                 {users.filter(u => u.membershipTier === 'premium' || u.membershipTier === 'lifetime').length}
               </div>
-              <div className="text-gray-600 text-sm">Premium Members</div>
+              <div className="text-gray-300 text-sm">Premium Members</div>
             </div>
-            <div className="bg-white rounded-xl shadow-lg p-6 text-center">
-              <div className="text-2xl font-bold text-orange-600 mb-2">
+            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-6 text-center">
+              <div className="text-2xl font-bold text-orange-400 mb-2">
                 {users.filter(u => u.joinedAt > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length}
               </div>
-              <div className="text-gray-600 text-sm">New This Month</div>
+              <div className="text-gray-300 text-sm">New This Month</div>
             </div>
           </div>
 
           {/* Filters */}
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-6 mb-8">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-200 mb-2">
                   Search Users
                 </label>
                 <input
                   type="text"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white placeholder-gray-400"
                   placeholder="Search by name, email, or company..."
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-200 mb-2">
                   Membership Tier
                 </label>
                 <select
                   value={filterTier}
                   onChange={(e) => setFilterTier(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
                 >
                   <option value="">All Tiers</option>
                   <option value="basic">Basic</option>
@@ -246,13 +260,13 @@ export default function AdminPanel() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-200 mb-2">
                   Verification Status
                 </label>
                 <select
                   value={filterVerification}
                   onChange={(e) => setFilterVerification(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
                 >
                   <option value="">All Users</option>
                   <option value="verified">Verified</option>
@@ -263,44 +277,44 @@ export default function AdminPanel() {
           </div>
 
           {/* Users Table */}
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+              <table className="min-w-full divide-y divide-white/10">
+                <thead className="bg-white/5">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       User
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Membership
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Joined
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="divide-y divide-white/10">
                   {filteredUsers.map((user) => (
-                    <tr key={user.uid} className="hover:bg-gray-50">
+                    <tr key={user.uid} className="hover:bg-white/5 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                          <div className="text-sm font-medium text-white flex items-center gap-2">
                             {user.displayName}
                             {user.isAdmin && (
-                              <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+                              <span className="bg-red-500/20 text-red-300 border border-red-400/30 px-2 py-1 rounded-full text-xs font-medium">
                                 ADMIN
                               </span>
                             )}
                           </div>
-                          <div className="text-sm text-gray-500">{user.email}</div>
+                          <div className="text-sm text-gray-400">{user.email}</div>
                           {user.company && (
-                            <div className="text-sm text-gray-500">{user.company}</div>
+                            <div className="text-sm text-gray-400">{user.company}</div>
                           )}
                         </div>
                       </td>
@@ -308,12 +322,12 @@ export default function AdminPanel() {
                         <select
                           value={user.membershipTier}
                           onChange={(e) => updateUserTier(user.uid, e.target.value)}
-                          className={`px-3 py-1 rounded-full text-xs font-medium border-none ${
+                          className={`px-3 py-1 rounded-full text-xs font-medium border ${
                             user.membershipTier === 'premium' 
-                              ? 'bg-purple-100 text-purple-800' 
+                              ? 'bg-purple-500/20 text-purple-300 border-purple-400/30' 
                               : user.membershipTier === 'lifetime'
-                              ? 'bg-yellow-100 text-yellow-800'
-                              : 'bg-blue-100 text-blue-800'
+                              ? 'bg-yellow-500/20 text-yellow-300 border-yellow-400/30'
+                              : 'bg-blue-500/20 text-blue-300 border-blue-400/30'
                           }`}
                         >
                           <option value="basic">Basic</option>
@@ -323,41 +337,41 @@ export default function AdminPanel() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium border ${
                             user.emailVerified 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
+                              ? 'bg-green-500/20 text-green-300 border-green-400/30' 
+                              : 'bg-red-500/20 text-red-300 border-red-400/30'
                           }`}>
                             {user.emailVerified ? 'Verified' : 'Unverified'}
                           </span>
                           {!user.emailVerified && (
                             <button
                               onClick={() => verifyUser(user.uid)}
-                              className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded hover:bg-blue-200"
+                              className="text-xs bg-blue-500/20 text-blue-300 border border-blue-400/30 px-2 py-1 rounded hover:bg-blue-500/30"
                             >
                               Verify
                             </button>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                         {user.joinedAt.toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => toggleAdminStatus(user.uid, user.isAdmin || false)}
-                            className={`px-3 py-1 rounded text-xs font-medium ${
+                            className={`px-3 py-1 rounded text-xs font-medium border ${
                               user.isAdmin 
-                                ? 'bg-red-100 text-red-800 hover:bg-red-200' 
-                                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                                ? 'bg-red-500/20 text-red-300 border-red-400/30 hover:bg-red-500/30' 
+                                : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
                             }`}
                           >
                             {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
                           </button>
                           <button
                             onClick={() => deleteUser(user.uid)}
-                            className="px-3 py-1 rounded text-xs font-medium bg-red-100 text-red-800 hover:bg-red-200"
+                            className="px-3 py-1 rounded text-xs font-medium bg-red-500/20 text-red-300 border border-red-400/30 hover:bg-red-500/30"
                           >
                             Delete
                           </button>
@@ -371,9 +385,9 @@ export default function AdminPanel() {
             
             {filteredUsers.length === 0 && !loading && (
               <div className="text-center py-12">
-                <div className="text-gray-400 text-6xl mb-4">👥</div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No users found</h3>
-                <p className="text-gray-600">Try adjusting your search criteria or filters.</p>
+                <div className="text-gray-500 text-6xl mb-4">👥</div>
+                <h3 className="text-lg font-medium text-white mb-2">No users found</h3>
+                <p className="text-gray-400">Try adjusting your search criteria or filters.</p>
               </div>
             )}
           </div>

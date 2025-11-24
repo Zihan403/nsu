@@ -48,7 +48,6 @@ export default function Footer() {
             <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
             <ul className="space-y-2">
               <li><Link href="/about" className="text-gray-400 hover:text-white transition-colors">About Us</Link></li>
-              <li><Link href="/directory" className="text-gray-400 hover:text-white transition-colors">Alumni Directory</Link></li>
               <li><Link href="/events" className="text-gray-400 hover:text-white transition-colors">Events</Link></li>
               <li><Link href="/benefits" className="text-gray-400 hover:text-white transition-colors">Benefits</Link></li>
               <li><Link href="/new-students" className="text-gray-400 hover:text-white transition-colors">New Students</Link></li>
@@ -83,9 +82,12 @@ export default function Footer() {
             <p className="text-gray-400 text-sm">
               © 2025 NSU Alumni Melbourne. All rights reserved.
             </p>
-            <p className="text-gray-400 text-sm mt-2 md:mt-0">
-              Made with ❤️ for the NSU community in Melbourne
-            </p>
+            <div className="text-gray-400 text-sm mt-2 md:mt-0 text-center md:text-right">
+              <p className="mb-1">Made with ❤️ for the NSU community in Melbourne</p>
+              <p className="text-xs">
+                Developed by <a href="https://www.linkedin.com/in/zihan-sarowar/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 transition-colors underline">Sarowar Hossain Zihan</a>
+              </p>
+            </div>
           </div>
         </div>
       </div>

@@ -56,9 +56,6 @@ export default function Navigation() {
             <Link href="/about" className="text-gray-300 hover:text-white transition-colors font-medium text-sm uppercase tracking-wide">
               About Us
             </Link>
-            <Link href="/directory" className="text-gray-300 hover:text-white transition-colors font-medium text-sm uppercase tracking-wide">
-              Directory
-            </Link>
             <Link href="/events" className="text-gray-300 hover:text-white transition-colors font-medium text-sm uppercase tracking-wide">
               Events
             </Link>
@@ -117,7 +114,6 @@ export default function Navigation() {
                       onClick={() => setIsProfileDropdownOpen(false)}
                       className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
                     >
-                      <span>📊</span>
                       <span>Dashboard</span>
                     </Link>
                     <Link
@@ -128,7 +124,6 @@ export default function Navigation() {
                       }}
                       className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
                     >
-                      <span>👤</span>
                       <span>Edit Profile</span>
                     </Link>
                     <div className="border-t border-gray-200 py-1">
@@ -136,7 +131,6 @@ export default function Navigation() {
                         onClick={handleSignOut}
                         className="flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
                       >
-                        <span>🚪</span>
                         <span>Sign Out</span>
                       </button>
                     </div>
@@ -178,9 +172,6 @@ export default function Navigation() {
             </Link>
             <Link href="/about" className="block text-gray-300 hover:text-white transition-colors font-medium text-sm uppercase tracking-wide py-2">
               About Us
-            </Link>
-            <Link href="/directory" className="block text-gray-300 hover:text-white transition-colors font-medium text-sm uppercase tracking-wide py-2">
-              Directory
             </Link>
             <Link href="/events" className="block text-gray-300 hover:text-white transition-colors font-medium text-sm uppercase tracking-wide py-2">
               Events

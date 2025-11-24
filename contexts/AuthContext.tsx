@@ -180,6 +180,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const result = await createUserWithEmailAndPassword(auth, email, password)
     const user = result.user
 
+    // Default admin emails
+    const adminEmails = ['melbournensuers@gmail.com', 'zihansarowar403@gmail.com']
+    const isDefaultAdmin = adminEmails.includes(user.email?.toLowerCase() || '')
+
     // Create user profile in Firestore with all fields explicitly
     const userProfile: any = {
       uid: user.uid,
@@ -188,6 +192,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       membershipTier: 'basic',
       joinedAt: new Date(),
       emailVerified: false, // Mark as not verified initially
+      isAdmin: isDefaultAdmin, // Auto-grant admin to default emails
       // Ensure all fields from additionalInfo are included
       firstName: additionalInfo?.firstName || '',
       lastName: additionalInfo?.lastName || '',
@@ -239,13 +244,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Check if user profile exists, if not create it
     const profileDoc = await getDoc(doc(db!, 'users', user.uid))
     if (!profileDoc.exists()) {
+      // Default admin emails
+      const adminEmails = ['melbournensuers@gmail.com', 'zihansarowar403@gmail.com']
+      const isDefaultAdmin = adminEmails.includes(user.email?.toLowerCase() || '')
+
       const userProfile: any = {
         uid: user.uid,
         email: user.email!,
         displayName: user.displayName || user.email!.split('@')[0],
         membershipTier: 'basic',
         joinedAt: new Date(),
-        emailVerified: user.emailVerified
+        emailVerified: user.emailVerified,
+        isAdmin: isDefaultAdmin
       }
 
       // Only add photoURL if it exists

@@ -4,44 +4,34 @@ import Link from 'next/link'
 export default function Benefits() {
   const perks = [
     {
-      title: "Professional Services Discount",
+      title: "The Hopkins Group",
       discount: "10% OFF",
-      description: "Enjoy 10% off professional financial, tax, and wealth advisory services through our official partner, The HR Block — a leading Melbourne-based financial advisory firm supporting the NSUers community.",
+      description: "Financial planning & accounting benefits for alumni. Enjoy 10% off professional financial, tax, and wealth advisory services through our official partner.",
       image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&h=400&fit=crop",
       color: "blue",
-      link: "#",
+      link: "/join",
       isExternal: false,
       status: "active"
     },
     {
-      title: "Car Servicing & Diagnostics Discount",
-      discount: "COMING SOON",
-      description: "Receive discounts on car servicing, repairs, and diagnostics through MIDAS one of Melbourne's reliable automotive service providers. Coming soon for Melbourne NSUers members.",
-      image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&h=400&fit=crop",
-      color: "purple",
-      link: "#",
-      isExternal: false,
-      status: "coming-soon"
-    },
-    {
-      title: "Dining & Everyday Perk",
-      discount: "COMING SOON",
-      description: "Exclusive dining perks coming soon for registered Melbourne NSUers members — a great way to save while connecting over casual meals with fellow alumni.",
+      title: "RRAE Pty Ltd (Operator of Subway Skye)",
+      discount: "10% OFF",
+      description: "Exclusive 10% in-store discount for verified alumni members. Enjoy quality food and great savings at Subway Skye with your NSUers membership.",
       image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&h=400&fit=crop",
       color: "green",
-      link: "#",
-      isExternal: false,
-      status: "coming-soon"
-    },
-    {
-      title: "Giving Back & Volunteering",
-      discount: "MAKE AN IMPACT",
-      description: "Join our community initiatives and make a difference. Explore volunteer opportunities, gain event experience, and connect with purpose-driven members.",
-      image: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=600&h=400&fit=crop",
-      color: "orange",
-      link: "/benefits/giving-back",
+      link: "/join",
       isExternal: false,
       status: "active"
+    },
+    {
+      title: "More Partners Coming Soon",
+      discount: "COMING SOON",
+      description: "Exciting new partnerships across dining, automotive, retail, and lifestyle sectors. More exclusive member benefits arriving soon!",
+      image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&h=400&fit=crop",
+      color: "purple",
+      link: "/join",
+      isExternal: false,
+      status: "coming-soon"
     }
   ]
 
@@ -90,7 +80,7 @@ export default function Benefits() {
           <p className="text-lg text-gray-600">Exclusive discounts and benefits for registered members</p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {perks.map((perk, index) => (
             <div 
               key={index}
@@ -120,26 +110,15 @@ export default function Benefits() {
                 <p className="text-gray-600 text-sm leading-relaxed mb-4 min-h-[120px]">
                   {perk.description}
                 </p>
-                {perk.link.startsWith('/') ? (
-                  <Link 
-                    href={perk.link}
-                    className={`w-full ${colorClasses[perk.color as keyof typeof colorClasses].button} text-white py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center gap-2`}
-                  >
-                    Learn More
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
-                ) : (
-                  <button 
-                    className={`w-full ${colorClasses[perk.color as keyof typeof colorClasses].button} text-white py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center gap-2`}
-                  >
-                    Learn More
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                )}
+                <Link 
+                  href={perk.link}
+                  className={`w-full ${colorClasses[perk.color as keyof typeof colorClasses].button} text-white py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center gap-2`}
+                >
+                  Unlock Benefit
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
               </div>
             </div>
           ))}
@@ -156,6 +135,79 @@ export default function Benefits() {
               More exciting discounts and collaborations coming soon across hospitality, retail, lifestyle, 
               and education sectors. Stay tuned for more ways to enjoy being a Melbourne NSUers member!
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Giving Back & Volunteering Section */}
+      <div className="bg-white py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-3xl overflow-hidden shadow-xl">
+            <div className="grid lg:grid-cols-2 gap-0">
+              {/* Image Side */}
+              <div className="relative h-64 lg:h-auto">
+                <Image
+                  src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800&h=600&fit=crop"
+                  alt="Giving Back & Volunteering"
+                  width={800}
+                  height={600}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-900/40 to-transparent"></div>
+                <div className="absolute top-6 left-6 bg-orange-600 text-white px-6 py-2 rounded-full font-bold text-sm shadow-lg">
+                  MAKE AN IMPACT
+                </div>
+              </div>
+
+              {/* Content Side */}
+              <div className="p-8 lg:p-12 flex flex-col justify-center">
+                <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                  Giving Back & Volunteering
+                </h2>
+                <p className="text-gray-700 text-lg leading-relaxed mb-6">
+                  Join our community initiatives and make a difference. Explore volunteer opportunities, 
+                  gain event experience, and connect with purpose-driven members who share your passion 
+                  for giving back to the community.
+                </p>
+                
+                <div className="space-y-3 mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center text-white">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700 font-medium">Event volunteering opportunities</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center text-white">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700 font-medium">Community impact initiatives</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-orange-600 rounded-full flex items-center justify-center text-white">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-700 font-medium">Connect with purpose-driven members</span>
+                  </div>
+                </div>
+
+                <Link 
+                  href="/benefits/giving-back"
+                  className="inline-flex items-center justify-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-8 py-4 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
+                >
+                  Learn More About Volunteering
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>

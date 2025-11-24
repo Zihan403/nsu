@@ -1,28 +1,76 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
+import { collection, getDocs, query, orderBy } from 'firebase/firestore'
+import { db } from '@/lib/firebaseConfig'
+
+interface Event {
+  id: string
+  date: string
+  time: string
+  title: string
+  description: string
+  location: string
+  locationUrl?: string
+  category: string
+  image?: string
+}
 
 export default function Events() {
   const [searchTopic, setSearchTopic] = useState('')
   const [selectedTimeframe, setSelectedTimeframe] = useState('All times')
   const [selectedCategory, setSelectedCategory] = useState('All categories')
-  const [expandedEvent, setExpandedEvent] = useState<number | null>(null)
+  const [expandedEvent, setExpandedEvent] = useState<string | null>(null)
+  const [events, setEvents] = useState<Event[]>([])
+  const [loading, setLoading] = useState(true)
 
-  // Sample events data
-  const events = [
-    {
-      id: 1,
-      date: "November 24, 2025",
-      time: "6:00 PM",
-      title: "Reconnect 2025: Strengthening the NSU Bond",
-      description: "Join Melbourne NSUers for our signature annual event, Reconnect 2025! This is your chance to reconnect with fellow NSU alumni, celebrate our shared legacy, and strengthen the bonds that make our community special. Whether you're a recent graduate or a senior alumnus, this event brings together generations of NSUers to network, share stories, and build lasting friendships. Enjoy an evening of meaningful conversations, delicious food, refreshments, and the warmth of our tight-knit NSU family.",
-      location: "Community Hub at The Dock",
-      locationUrl: "https://www.facebook.com/share/1Gyav2U2zR/",
-      category: "Social",
-      image: "/assets/images/events/reconnect.jpg"
+  // Format date for display
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr)
+    return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  }
+
+  // Format time for display
+  const formatTime = (timeStr: string) => {
+    const [hours, minutes] = timeStr.split(':')
+    const hour = parseInt(hours)
+    const ampm = hour >= 12 ? 'PM' : 'AM'
+    const displayHour = hour % 12 || 12
+    return `${displayHour}:${minutes} ${ampm}`
+  }
+
+  // Fetch events from Firestore
+  useEffect(() => {
+    const fetchEvents = async () => {
+      if (!db) {
+        console.error('Firebase not initialized')
+        setLoading(false)
+        return
+      }
+
+      try {
+        const eventsQuery = query(collection(db, 'events'), orderBy('date', 'desc'))
+        const querySnapshot = await getDocs(eventsQuery)
+        
+        const eventsData: Event[] = []
+        querySnapshot.forEach((doc) => {
+          eventsData.push({
+            id: doc.id,
+            ...doc.data()
+          } as Event)
+        })
+        
+        setEvents(eventsData)
+      } catch (error) {
+        console.error('Error fetching events:', error)
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+
+    fetchEvents()
+  }, [])
 
   return (
     <div className="min-h-screen bg-white">
@@ -49,7 +97,7 @@ export default function Events() {
               <input
                 type="text"
                 placeholder="Search all things NSU"
-                className="block w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-full leading-5 bg-white text-gray-900 placeholder-gray-500 shadow-lg transition-all duration-200 ease-in-out
+                className="block w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-full leading-5 bg-white text-gray-900 placeholder-gray-400 shadow-lg transition-all duration-200 ease-in-out
                          hover:border-blue-300 hover:shadow-xl hover:bg-gray-50
                          focus:outline-none focus:placeholder-gray-400 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white focus:shadow-xl
                          active:scale-[0.99]"
@@ -85,13 +133,13 @@ export default function Events() {
                   placeholder="Topic"
                   value={searchTopic}
                   onChange={(e) => setSearchTopic(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-400"
                 />
                 <div className="flex gap-4">
                   <select
                     value={selectedTimeframe}
                     onChange={(e) => setSelectedTimeframe(e.target.value)}
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                    className="flex-1 px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                   >
                     <option>Browse: Time period</option>
                     <option>This week</option>
@@ -113,7 +161,7 @@ export default function Events() {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-gray-900"
                 >
                   <option>Browse: All categories</option>
                   <option>Professional Development</option>
@@ -130,8 +178,20 @@ export default function Events() {
           </div>
 
           {/* Events List */}
-          <div className="space-y-12">
-            {events.map((event) => {
+          {loading ? (
+            <div className="text-center py-16">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading events...</p>
+            </div>
+          ) : events.length === 0 ? (
+            <div className="text-center py-16 bg-gray-50 rounded-lg">
+              <div className="text-6xl mb-4">📅</div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-2">No Events Yet</h3>
+              <p className="text-gray-600">Check back soon for upcoming events!</p>
+            </div>
+          ) : (
+            <div className="space-y-12">
+              {events.map((event) => {
               const isExpanded = expandedEvent === event.id
               
               return (
@@ -152,7 +212,7 @@ export default function Events() {
                     {/* Date and Time Header */}
                     <div className="mb-3 pb-3 border-b border-gray-200">
                       <div className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
-                        📅 {event.date} • {event.time}
+                        📅 {formatDate(event.date)} • {formatTime(event.time)}
                       </div>
                     </div>
                     
@@ -207,7 +267,8 @@ export default function Events() {
                 </div>
               )
             })}
-          </div>
+            </div>
+          )}
         </div>
       </section>
     </div>
