@@ -31,6 +31,12 @@ export default function AlumniDirectory() {
 
   useEffect(() => {
     const fetchMembers = async () => {
+      if (!db) {
+        console.error('Firebase not initialized');
+        setLoading(false);
+        return;
+      }
+      
       try {
         const usersRef = collection(db, 'users')
         const querySnapshot = await getDocs(usersRef)

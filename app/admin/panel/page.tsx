@@ -34,9 +34,15 @@ export default function AdminPanel() {
   const isAdmin = userProfile?.email === 'admin@nsu.edu' || userProfile?.isAdmin === true
 
   useEffect(() => {
-    if (!isAdmin || !db) return
+    if (!isAdmin) return
 
     const fetchUsers = async () => {
+      if (!db) {
+        console.error('Firebase not initialized');
+        setLoading(false);
+        return;
+      }
+
       try {
         const usersRef = collection(db, 'users')
         const querySnapshot = await getDocs(usersRef)
