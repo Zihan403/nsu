@@ -8,8 +8,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm ci
 
-# Copy source
+# Copy source (exclude nsu-alumni if it exists)
 COPY . .
+RUN rm -rf nsu-alumni 2>/dev/null || true
 
 # Build Next.js
 RUN npm run build

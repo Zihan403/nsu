@@ -1,0 +1,23 @@
+[variables]
+# Force nixpacks to ignore the old nsu-alumni reference
+NIXPACKS_NO_CACHE = "false"
+
+[build]
+# Set the build directory to root
+cmds = [
+  "npm ci",
+  "npm run build"
+]
+
+[start]
+cmd = "npm start"
+
+# Cache configuration
+[[build.cacheDirectories]]
+path = "/root/.npm"
+
+[[build.cacheDirectories]]
+path = "/app/node_modules"
+
+[[build.cacheDirectories]]
+path = "/app/.next"
