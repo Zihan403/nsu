@@ -15,10 +15,19 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
+// Debug logging for production
+console.log('🔍 Firebase Config Debug:', {
+  hasApiKey: !!firebaseConfig.apiKey,
+  hasProjectId: !!firebaseConfig.projectId,
+  projectId: firebaseConfig.projectId,
+  environment: process.env.NODE_ENV
+});
+
 // Verify Firebase config is loaded (skip during build)
-if (!firebaseConfig.projectId && process.env.NODE_ENV !== 'development' && process.env.VERCEL !== '1' && process.env.RAILWAY !== '1') {
-  console.error('🔴 FATAL: Firebase configuration not loaded! Check .env.local file')
-  console.log('Expected env vars: NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_PROJECT_ID, etc.')
+if (!firebaseConfig.projectId) {
+  console.error('🔴 FATAL: Firebase configuration not loaded!');
+  console.error('Missing env vars. Check Railway Variables tab.');
+  console.error('Required: NEXT_PUBLIC_FIREBASE_API_KEY, NEXT_PUBLIC_FIREBASE_PROJECT_ID, etc.');
 }
 
 // Initialize Firebase (only once, and only if config is available)
