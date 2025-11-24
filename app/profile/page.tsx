@@ -3,14 +3,12 @@
 import { useAuth } from '../../contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import ProtectedRoute from '../../components/ProtectedRoute'
-import { useState, useRef, useEffect } from 'react'
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { storage } from '../../lib/firebaseConfig'
+import { useState, useEffect } from 'react'
+import { CldUploadWidget } from 'next-cloudinary'
 
 export default function EditProfile() {
   const { user, userProfile, updateUserProfile } = useAuth()
   const router = useRouter()
-  const fileInputRef = useRef<HTMLInputElement>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   const [formData, setFormData] = useState({
@@ -24,12 +22,13 @@ export default function EditProfile() {
   })
 
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [photoURL, setPhotoURL] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
 
   // Load user data
   useEffect(() => {
+    console.log('EditProfile useEffect - userProfile:', userProfile)
     if (!userProfile) {
       setIsLoading(true)
       return
@@ -53,6 +52,7 @@ export default function EditProfile() {
     if (userProfile.photoURL) {
       setPhotoPreview(userProfile.photoURL)
     }
+    console.log('EditProfile form loaded with data:', {firstName: userProfile.firstName, lastName: userProfile.lastName})
   }, [userProfile])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -62,49 +62,27 @@ export default function EditProfile() {
     })
   }
 
-  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      if (!file.type.startsWith('image/')) {
-        setMessage({ type: 'error', text: 'Please select an image file' })
-        return
-      }
-      
-      if (file.size > 5 * 1024 * 1024) {
-        setMessage({ type: 'error', text: 'Image size should be less than 5MB' })
-        return
-      }
-
-      setSelectedFile(file)
-      
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result as string)
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
-  const handlePhotoUpload = async (): Promise<string | null> => {
-    if (!selectedFile || !user) return null
-
-    try {
-      const fileExtension = selectedFile.name.split('.').pop()
-      const fileName = `profile-photos/${user.uid}.${fileExtension}`
-      const storageRef = ref(storage, fileName)
-
-      await uploadBytes(storageRef, selectedFile)
-      const downloadURL = await getDownloadURL(storageRef)
-      
-      return downloadURL
-    } catch (error) {
-      console.error('Error uploading photo:', error)
-      return null
+  const handlePhotoUpload = (result: any) => {
+    if (result.event === 'success') {
+      const url = result.info.secure_url
+      setPhotoURL(url)
+      setPhotoPreview(url)
+      console.log('✅ Photo uploaded to Cloudinary:', url)
+      setMessage({ type: 'success', text: 'Photo uploaded successfully!' })
+      setTimeout(() => setMessage(null), 3000)
     }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validation
+    if (!formData.firstName.trim() || !formData.lastName.trim()) {
+      setMessage({ type: 'error', text: 'First name and last name are required' })
+      return
+    }
+
+    console.log('🔄 Form submission started', {formData, photoURL})
     setSaving(true)
     setMessage(null)
 
@@ -123,26 +101,29 @@ export default function EditProfile() {
         address: fullAddress
       }
 
-      // Upload photo if selected
-      if (selectedFile) {
-        const uploadedURL = await handlePhotoUpload()
-        if (uploadedURL) {
-          updateData.photoURL = uploadedURL
-        }
+      // Add photo URL if one was uploaded via Cloudinary
+      if (photoURL) {
+        updateData.photoURL = photoURL
+        console.log('📸 Including photo URL:', photoURL)
       }
 
+      console.log('📝 Update data prepared:', updateData)
+      console.log('💾 Calling updateUserProfile...')
+      
       await updateUserProfile(updateData)
-
-      setSaving(false)
+      
       setMessage({ type: 'success', text: 'Profile updated successfully!' })
       
+      console.log('⏱️ Redirecting to dashboard in 1500ms...')
       setTimeout(() => {
+        console.log('🔀 Redirecting now...')
+        setSaving(false)
         router.push('/dashboard')
       }, 1500)
     } catch (error: any) {
-      console.error('Error updating profile:', error)
+      console.error('❌ Error updating profile:', error)
       setSaving(false)
-      setMessage({ type: 'error', text: error.message || 'Failed to update profile' })
+      setMessage({ type: 'error', text: error.message || 'Failed to update profile. Please try again.' })
     }
   }
 
@@ -217,7 +198,7 @@ export default function EditProfile() {
                       </div>
                     )}
                   </div>
-                  {selectedFile && (
+                  {photoURL && (
                     <div className="absolute -bottom-2 -right-2 bg-green-500 text-white rounded-full p-2 shadow-lg">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -226,20 +207,26 @@ export default function EditProfile() {
                   )}
                 </div>
                 <div className="flex-1 text-center sm:text-left">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handlePhotoSelect}
-                    className="hidden"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md"
+                  <CldUploadWidget
+                    uploadPreset="nsu_alumni_photos"
+                    onSuccess={handlePhotoUpload}
+                    options={{
+                      maxFileSize: 5242880, // 5MB
+                      folder: 'nsu-alumni/profile-photos',
+                      resourceType: 'image',
+                      clientAllowedFormats: ['jpg', 'jpeg', 'png', 'gif', 'webp']
+                    }}
                   >
-                    Choose Photo
-                  </button>
+                    {({ open }: any) => (
+                      <button
+                        type="button"
+                        onClick={() => open()}
+                        className="bg-gradient-to-r from-slate-800 to-blue-800 hover:from-slate-900 hover:to-blue-900 text-white px-8 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md"
+                      >
+                        Choose Photo
+                      </button>
+                    )}
+                  </CldUploadWidget>
                   <p className="text-sm text-gray-600 mt-3">
                     JPG, PNG or GIF. Max size 5MB.
                   </p>
@@ -264,7 +251,7 @@ export default function EditProfile() {
                     value={formData.firstName}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
                     placeholder="John"
                   />
                 </div>
@@ -279,7 +266,7 @@ export default function EditProfile() {
                     value={formData.lastName}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
                     placeholder="Doe"
                   />
                 </div>
@@ -292,7 +279,7 @@ export default function EditProfile() {
                     type="email"
                     value={userProfile?.email || user?.email || ''}
                     disabled
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-900 cursor-not-allowed"
                   />
                   <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
                 </div>
@@ -307,7 +294,7 @@ export default function EditProfile() {
                     value={formData.phoneNumber}
                     onChange={handleInputChange}
                     placeholder="+61 XXX XXX XXX"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
                   />
                 </div>
               </div>
@@ -327,7 +314,7 @@ export default function EditProfile() {
                     value={formData.streetAddress}
                     onChange={handleInputChange}
                     placeholder="123 Main Street"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
                   />
                 </div>
 
@@ -341,7 +328,7 @@ export default function EditProfile() {
                     value={formData.suburb}
                     onChange={handleInputChange}
                     placeholder="Melbourne"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
                   />
                 </div>
 
@@ -353,7 +340,7 @@ export default function EditProfile() {
                     name="state"
                     value={formData.state}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900"
                   >
                     <option value="">Select State</option>
                     <option value="VIC">Victoria (VIC)</option>
@@ -378,7 +365,7 @@ export default function EditProfile() {
                     onChange={handleInputChange}
                     placeholder="3000"
                     maxLength={4}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
                   />
                 </div>
               </div>
@@ -389,7 +376,7 @@ export default function EditProfile() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-lg font-bold text-lg transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
+                className="flex-1 bg-gradient-to-r from-slate-800 to-blue-800 hover:from-slate-900 hover:to-blue-900 text-white py-4 rounded-lg font-bold text-lg transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg"
               >
                 {saving ? (
                   <span className="flex items-center justify-center gap-2">

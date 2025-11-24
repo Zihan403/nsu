@@ -84,7 +84,7 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
             {/* Main Content */}
             <div className="lg:col-span-2">
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-8 leading-tight">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-8 leading-tight">
                 We are <span className="italic">Melbourne NSUers</span>
               </h2>
               
@@ -158,76 +158,77 @@ export default function Home() {
       </section>
 
       {/* Upcoming Events Section */}
-      <section className="py-20 bg-white">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
               Upcoming Events
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Event 1 */}
-            <div className="group cursor-pointer">
-              <div className="aspect-video mb-6 overflow-hidden rounded-lg">
-                <Image
-                  src="/assets/images/events/reconnect.jpg"
-                  alt="Annual Networking Night"
-                  width={600}
-                  height={400}
-                  className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Annual Networking Night</h3>
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                Connect with fellow NSUers, share your professional journey, and build lasting relationships 
-                at Melbourne's premier NSU alumni networking event. Food, drinks, and great conversations await!
-              </p>
-              <div className="flex items-center justify-between">
-                <Link 
-                  href="/events"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all"
-                >
-                  REGISTER NOW
-                </Link>
-                <span className="text-gray-500 text-sm">DECEMBER 15, 2025</span>
-              </div>
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-0 mb-8">
+            {/* Event Image - Left Side */}
+            <div className="lg:col-span-2 h-56 lg:h-64 overflow-hidden">
+              <Image
+                src="/assets/images/events/reconnect.jpg"
+                alt="Reconnect 2025"
+                width={400}
+                height={300}
+                className="w-full h-full object-cover"
+              />
             </div>
 
-            {/* Event 2 */}
-            <div className="group cursor-pointer">
-              <div className="aspect-video mb-6 overflow-hidden rounded-lg">
-                <Image
-                  src="/api/img/600/400"
-                  alt="Career Development Workshop"
-                  width={600}
-                  height={400}
-                  className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                />
+            {/* Event Content - Right Side */}
+            <div className="lg:col-span-3 bg-white border-b-2 border-r-2 border-t-2 border-gray-200 p-5 lg:p-6">
+              {/* Date and Time Header */}
+              <div className="mb-2 pb-2 border-b border-gray-200">
+                <div className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
+                  📅 November 24, 2025 • 6:00 PM
+                </div>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Career Development Workshop</h3>
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                Join senior alumni professionals for an interactive workshop covering resume building, 
-                interview skills, and career advancement strategies tailored for the Australian job market.
-              </p>
-              <div className="flex items-center justify-between">
-                <Link 
+              
+              {/* Title */}
+              <h3 className="text-xl lg:text-2xl font-bold text-gray-900 mb-2 leading-tight">
+                Reconnect 2025: Strengthening the NSU Bond
+              </h3>
+              
+              {/* Location */}
+              <div className="mb-2">
+                <a 
+                  href="https://www.facebook.com/share/1Gyav2U2zR/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs font-semibold text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  📍 Community Hub at The Dock
+                </a>
+              </div>
+              
+              {/* Description */}
+              <div className="mb-4">
+                <p className="text-gray-600 leading-relaxed text-xs">
+                  Join Melbourne NSUers for our signature annual event! Reconnect with fellow alumni, celebrate our shared legacy, and strengthen the bonds that make our community special.
+                </p>
+              </div>
+              
+              {/* Action Button */}
+              <div className="flex justify-end">
+                <Link
                   href="/events"
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all"
+                  className="bg-gradient-to-r from-blue-900 to-slate-900 hover:from-blue-800 hover:to-slate-800 text-white font-semibold px-6 py-2 text-xs transition-colors"
                 >
                   LEARN MORE
                 </Link>
-                <span className="text-gray-500 text-sm">JANUARY 20, 2026</span>
               </div>
             </div>
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center">
             <Link 
               href="/events"
-              className="bg-black text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-800 transition-all"
+              className="bg-gradient-to-r from-blue-900 to-slate-900 hover:from-blue-800 hover:to-slate-800 text-white px-6 py-3 font-semibold text-sm transition-all"
             >
-              VIEW CALENDAR
+              VIEW ALL EVENTS
             </Link>
           </div>
         </div>
@@ -237,7 +238,7 @@ export default function Home() {
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
-            <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
               Latest News & Updates
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -336,89 +337,114 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final CTA Section */}
-      <section className="py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            {/* Left Content */}
-            <div>
-              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                Your NSU. Your impact.
-              </h2>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-                Scholarships. Research. The Mustang experience. Your gift keeps NSU moving forward for students 
-                today and leaders tomorrow.
-              </p>
-              
-              <div className="space-y-4 mb-8">
-                <Link 
-                  href="/donate"
-                  className="inline-block bg-red-600 hover:bg-red-700 text-white font-semibold px-8 py-4 rounded-lg text-lg transition-all"
-                >
-                  GIVE NOW
-                </Link>
-                <div className="mt-4">
-                  <p className="text-gray-600 mb-2">Prefer to explore first? <Link href="/giving" className="text-blue-600 underline">See how gifts help</Link></p>
-                  <p className="text-gray-600 text-sm">
-                    Fast, secure online form. You can direct your gift to the area you care about most.
-                  </p>
-                </div>
+      {/* Hear from Our Alumni Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+              Hear from Our Alumni
+            </h2>
+            <p className="text-gray-600">
+              Stories of connection, community, and impact
+            </p>
+          </div>
+
+          <div className="flex flex-col md:flex-row gap-8 items-stretch">
+            {/* Left - Photo with Info Card */}
+            <div className="md:w-1/3 flex flex-col">
+              <div className="rounded-lg overflow-hidden shadow-md mb-4 flex-grow">
+                <Image
+                  src="/assets/images/team/mirza.jpeg"
+                  alt="Mirza Asif Haider"
+                  width={300}
+                  height={350}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+              <div className="bg-gradient-to-r from-slate-900 to-blue-900 text-white rounded-lg p-4">
+                <p className="font-bold text-lg mb-1">Mirza Asif Haider</p>
+                <p className="text-sm text-blue-100">Ex President, Melbourne NSUers Alumni Association</p>
               </div>
             </div>
 
-            {/* Right Content - Event Highlight */}
-            <div className="relative">
-              <div className="aspect-video rounded-lg overflow-hidden relative">
-                <Image
-                  src="/api/img/600/400"
-                  alt="Mustang Tailgates"
-                  width={600}
-                  height={400}
-                  className="object-cover w-full h-full"
-                />
-                <div className="absolute inset-0 bg-black/40 flex flex-col justify-end p-8">
-                  <div className="text-white">
-                    <span className="text-sm font-semibold bg-white/20 px-3 py-1 rounded-full mb-4 inline-block">
-                      HAPPENING NOW
-                    </span>
-                    <h3 className="text-2xl font-bold mb-3">Mustang Tailgates</h3>
-                    <p className="text-lg mb-4">
-                      Grab your spot, see the schedule, and reconnect on the Boulevard.
-                    </p>
-                    <Link 
-                      href="/events/tailgates"
-                      className="inline-block bg-white text-gray-900 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-all"
-                    >
-                      PLAN YOUR TAILGATE
-                    </Link>
-                    <div className="mt-2">
-                      <span className="text-sm">Can't make it? </span>
-                      <Link href="/watch-party" className="text-sm text-red-400 underline">Find a watch party</Link>
-                    </div>
-                  </div>
+            {/* Right - Testimonial */}
+            <div className="md:w-2/3 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 md:p-8 flex flex-col justify-center">
+              <div className="mb-4">
+                <svg className="w-8 h-8 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M3 21c3 0 7-1 7-8V5c0-1.25-4.716-5-7-5S0 3.75 0 5v3c0 1 0 4 2 4h4v3c-1 1-2 0-2 -1v-3c0 1-1 2-2 2s-1.022-1.566-1-2V5c0-1-1-1-1-1z" />
+                </svg>
+              </div>
+
+              <div className="space-y-4 text-gray-800 text-sm md:text-base leading-relaxed">
+                <p>
+                  <span className="font-semibold">"Melbourne NSUers has always felt like a tight-knit family to me.</span> I was fortunate to be part of the founding group and serve in the Executive Body."
+                </p>
+
+                <p>
+                  "One moment I still carry is from 2015, after our first reunion. A young alumni said:"
+                </p>
+
+                <div className="bg-white border-l-4 border-blue-600 px-4 py-3 rounded italic text-gray-900 font-medium">
+                  "Bhaiya, thank you for arranging this. If not for this event, we wouldn't have realised how rich the NSU legacy is. Meeting senior alumni made me feel truly proud to be an NSUer today."
                 </div>
+
+                <p className="text-gray-700">
+                  <span className="font-semibold">That's what Melbourne NSUers means —</span> not just a network, but a community where every generation feels valued.
+                </p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Bottom CTA */}
-      <section className="py-16 bg-blue-600">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link 
-              href="/join"
-              className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all"
-            >
-              APPLY NOW
-            </Link>
-            <Link 
-              href="/visit"
-              className="bg-blue-700 hover:bg-blue-800 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-all"
-            >
-              VISIT US
-            </Link>
+      {/* Join Our Community CTA */}
+      <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">Join Our Community</h2>
+            <p className="text-xl text-blue-100 max-w-2xl mx-auto">
+              Connect with fellow NSU alumni, grow your network, and unlock exclusive benefits and opportunities.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+            {/* Become a Member Card */}
+            <div className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 hover:bg-white/15 transition-all duration-300 transform hover:-translate-y-2">
+              <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl mb-6 group-hover:scale-110 transition-transform">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">Become a Member</h3>
+              <p className="text-blue-100 mb-8 leading-relaxed text-sm">
+                Sign up today to access networking events, professional development, and exclusive member perks.
+              </p>
+              <Link 
+                href="/login"
+                className="inline-block w-full text-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
+              >
+                Get Started
+              </Link>
+            </div>
+
+            {/* Learn More Card */}
+            <div className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 hover:bg-white/15 transition-all duration-300 transform hover:-translate-y-2">
+              <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl mb-6 group-hover:scale-110 transition-transform">
+                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-white mb-3">Learn More</h3>
+              <p className="text-blue-100 mb-8 leading-relaxed text-sm">
+                Discover what makes Melbourne NSUers special and explore our mission and values.
+              </p>
+              <Link 
+                href="/about"
+                className="inline-block w-full text-center border-2 border-blue-400 text-blue-300 hover:bg-blue-600/20 px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105"
+              >
+                About Us
+              </Link>
+            </div>
           </div>
         </div>
       </section>

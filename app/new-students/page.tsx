@@ -449,55 +449,46 @@ export default function NewStudentsPage() {
           </div>
         </div>
 
-        {/* CTA Section - Redesigned */}
-        <div className="grid md:grid-cols-2 gap-8 animate-fade-in-up animation-delay-1000">
-          {/* Contact Card */}
-          <div className="relative overflow-hidden bg-white rounded-xl shadow-lg border-t-4 border-blue-600 p-8 hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-bl-full opacity-50"></div>
-            <div className="relative z-10">
-              <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                </svg>
+        {/* CTA Section - Ready to Join Our Community */}
+        <div className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 rounded-2xl">
+          <div className="max-w-4xl mx-auto px-6 text-center">
+            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-4">Ready to Join Our Community?</h2>
+            <p className="text-xl text-blue-100 mb-16 leading-relaxed">
+              Connect with 500+ NSU alumni in Melbourne and start your networking journey today.
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+              {/* Become a Member Card */}
+              <div className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 hover:bg-white/15 transition-all duration-300 transform hover:-translate-y-2">
+                <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl mb-6 group-hover:scale-110 transition-transform">
+                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3">Become a Member</h3>
+                <p className="text-blue-100 mb-8 leading-relaxed text-sm">
+                  Join the NSU alumni network in Melbourne and unlock exclusive benefits, events, and networking opportunities.
+                </p>
+                <a href="/join" className="inline-block w-full text-center bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
+                  Get Started
+                </a>
               </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Need Help?</h3>
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                Have questions or need assistance? Our support team is here to help you settle into Melbourne.
-              </p>
-              <a 
-                href="/contact" 
-                className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-              >
-                Contact Us
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </a>
-            </div>
-          </div>
 
-          {/* Join Community Card */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl shadow-lg p-8 text-white hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-bl-full"></div>
-            <div className="relative z-10">
-              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
+              {/* Get Support Card */}
+              <div className="group bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 hover:bg-white/15 transition-all duration-300 transform hover:-translate-y-2">
+                <div className="flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl mb-6 group-hover:scale-110 transition-transform">
+                  <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3">Need Help?</h3>
+                <p className="text-blue-100 mb-8 leading-relaxed text-sm">
+                  Have questions or need assistance settling into Melbourne? Our support team is here to help you.
+                </p>
+                <a href="/contact" className="inline-block w-full text-center border-2 border-blue-400 text-blue-300 hover:bg-blue-600/20 px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
+                  Contact Us
+                </a>
               </div>
-              <h3 className="text-2xl font-bold mb-3">Join Our Community</h3>
-              <p className="text-blue-100 mb-6 leading-relaxed">
-                Connect with 500+ NSU alumni in Melbourne. Network, share experiences, and build lifelong friendships.
-              </p>
-              <a 
-                href="/join" 
-                className="inline-flex items-center gap-2 bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-              >
-                Become a Member
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </a>
             </div>
           </div>
         </div>

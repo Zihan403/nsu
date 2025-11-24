@@ -39,7 +39,7 @@ export default function News() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50">
       {/* Hero Section - Melbourne NSUers Life */}
-      <div className="relative bg-gradient-to-r from-blue-600 to-blue-700 text-white py-24 overflow-hidden">
+      <div className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white py-24 overflow-hidden">
         {/* Background Image */}
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"

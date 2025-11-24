@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../../../contexts/AuthContext'
 import Link from 'next/link'
 
@@ -9,27 +9,47 @@ export default function ProfileSettings() {
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState('')
+  const [error, setError] = useState('')
   
   const [formData, setFormData] = useState({
-    displayName: userProfile?.displayName || '',
-    nsuId: userProfile?.nsuId || '',
-    major: userProfile?.major || '',
-    currentJob: userProfile?.currentJob || '',
-    company: userProfile?.company || '',
-    location: userProfile?.location || ''
+    displayName: '',
+    nsuId: '',
+    major: '',
+    currentJob: '',
+    company: '',
+    location: ''
   })
+
+  // Update form data when userProfile changes
+  useEffect(() => {
+    if (userProfile) {
+      console.log('📋 Updating form data with userProfile:', userProfile)
+      setFormData({
+        displayName: userProfile?.displayName || '',
+        nsuId: userProfile?.nsuId || '',
+        major: userProfile?.major || '',
+        currentJob: userProfile?.currentJob || '',
+        company: userProfile?.company || '',
+        location: userProfile?.location || ''
+      })
+    }
+  }, [userProfile])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setSuccess('')
+    setError('')
 
     try {
+      console.log('📝 Submitting form with data:', formData)
       await updateUserProfile(formData)
       setSuccess('Profile updated successfully!')
       setIsEditing(false)
-    } catch (error) {
-      console.error('Error updating profile:', error)
+      console.log('✅ Profile update successful')
+    } catch (error: any) {
+      console.error('❌ Error updating profile:', error)
+      setError(error.message || 'Failed to update profile. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -69,6 +89,12 @@ export default function ProfileSettings() {
           {success && (
             <div className="mx-8 mt-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-700">
               {success}
+            </div>
+          )}
+
+          {error && (
+            <div className="mx-8 mt-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+              {error}
             </div>
           )}
 

@@ -7,51 +7,27 @@ export default function Events() {
   const [searchTopic, setSearchTopic] = useState('')
   const [selectedTimeframe, setSelectedTimeframe] = useState('All times')
   const [selectedCategory, setSelectedCategory] = useState('All categories')
+  const [expandedEvent, setExpandedEvent] = useState<number | null>(null)
 
   // Sample events data
   const events = [
     {
       id: 1,
-      date: "12 November 2025",
-      title: "Leadership and Decision-Making in Alumni Networks",
-      description: "NSU Business Alumni Network (NBAN) invites you to our seventh annual symposium - a full-day, in-person event exploring how emerging leadership strategies impact alumni engagement and professional development.",
-      location: "Melbourne CBD",
-      category: "Professional",
-      image: "/api/img/300/200"
-    },
-    {
-      id: 2,
-      date: "18 November 2025",
-      title: "Free alumni webinar: Career Transitions #Decoded",
-      description: "Join Professor Sarah Rahman, Director of the NSU Career Development Center, on Tuesday 18 November for a comprehensive guide to navigating career transitions in today's dynamic job market.",
-      location: "Alumni",
-      category: "Career",
-      image: "/api/img/300/200"
-    },
-    {
-      id: 3,
-      date: "18 November 2025",
-      title: "Networking and Mentoring Excellence in Professional Growth",
-      description: "NSU Melbourne Chapter's Department of Alumni Relations is delighted to host this hybrid seminar featuring Emerita Professor Dr. Aminul Islam. Prof Islam will share insights on building meaningful professional relationships.",
-      location: "Melbourne",
-      category: "Networking",
-      image: "/api/img/300/200"
-    },
-    {
-      id: 4,
-      date: "3 December 2025",
-      title: "NSU Melbourne Alumni Celebration",
-      description: "Hosted by Professor Steven Vaughan, Dean of NSU Melbourne Chapter, this end-of-year celebration is a chance to reconnect with alumni, colleagues, and friends while celebrating our achievements.",
-      location: "NSU Melbourne Alumni Center",
+      date: "November 24, 2025",
+      time: "6:00 PM",
+      title: "Reconnect 2025: Strengthening the NSU Bond",
+      description: "Join Melbourne NSUers for our signature annual event, Reconnect 2025! This is your chance to reconnect with fellow NSU alumni, celebrate our shared legacy, and strengthen the bonds that make our community special. Whether you're a recent graduate or a senior alumnus, this event brings together generations of NSUers to network, share stories, and build lasting friendships. Enjoy an evening of meaningful conversations, delicious food, refreshments, and the warmth of our tight-knit NSU family.",
+      location: "Community Hub at The Dock",
+      locationUrl: "https://www.facebook.com/share/1Gyav2U2zR/",
       category: "Social",
-      image: "/api/img/300/200"
+      image: "/assets/images/events/reconnect.jpg"
     }
   ]
 
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-900 text-white">
+      <section className="relative bg-gradient-to-r from-blue-900 via-slate-900 to-blue-900 text-white">
         {/* Background particles effect */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute inset-0" style={{
@@ -123,7 +99,7 @@ export default function Events() {
                     <option>Next month</option>
                     <option>All times</option>
                   </select>
-                  <button className="px-8 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors">
+                  <button className="px-8 py-3 bg-gradient-to-r from-blue-900 to-slate-900 text-white font-semibold rounded-md hover:from-blue-800 hover:to-slate-800 transition-colors">
                     Search
                   </button>
                 </div>
@@ -146,7 +122,7 @@ export default function Events() {
                   <option>Career Services</option>
                   <option>Industry Panels</option>
                 </select>
-                <button className="w-full px-8 py-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition-colors">
+                <button className="w-full px-8 py-3 bg-gradient-to-r from-blue-900 to-slate-900 text-white font-semibold rounded-md hover:from-blue-800 hover:to-slate-800 transition-colors">
                   Browse
                 </button>
               </div>
@@ -154,41 +130,83 @@ export default function Events() {
           </div>
 
           {/* Events List */}
-          <div className="space-y-8">
-            {events.map((event) => (
-              <div key={event.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
-                  {/* Event Content */}
-                  <div className="lg:col-span-2 p-8">
-                    <div className="mb-4">
-                      <span className="text-gray-500 text-sm">{event.date}</span>
-                    </div>
-                    <h3 className="text-2xl font-bold text-blue-600 mb-4 hover:text-blue-800 transition-colors cursor-pointer">
-                      {event.title}
-                    </h3>
-                    <p className="text-gray-600 mb-4 leading-relaxed">
-                      {event.description}
-                    </p>
-                    <div className="text-sm font-semibold text-gray-900">
-                      {event.location}
-                    </div>
+          <div className="space-y-12">
+            {events.map((event) => {
+              const isExpanded = expandedEvent === event.id
+              
+              return (
+                <div key={event.id} className="grid grid-cols-1 lg:grid-cols-5 gap-0">
+                  {/* Event Image - Left Side */}
+                  <div className="lg:col-span-2 h-64 lg:h-72 overflow-hidden">
+                    <Image
+                      src={event.image}
+                      alt={event.title}
+                      width={400}
+                      height={300}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
 
-                  {/* Event Image */}
-                  <div className="lg:col-span-1">
-                    <div className="h-64 lg:h-full">
-                      <Image
-                        src={event.image}
-                        alt={event.title}
-                        width={300}
-                        height={200}
-                        className="w-full h-full object-cover"
-                      />
+                  {/* Event Content - Right Side */}
+                  <div className="lg:col-span-3 bg-white border-b-2 border-r-2 border-t-2 border-gray-200 p-6 lg:p-8">
+                    {/* Date and Time Header */}
+                    <div className="mb-3 pb-3 border-b border-gray-200">
+                      <div className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
+                        📅 {event.date} • {event.time}
+                      </div>
+                    </div>
+                    
+                    {/* Title */}
+                    <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-3 leading-tight">
+                      {event.title}
+                    </h3>
+                    
+                    {/* Location */}
+                    <div className="mb-3">
+                      <a 
+                        href={event.locationUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors"
+                      >
+                        📍 {event.location}
+                      </a>
+                    </div>
+                    
+                    {/* Description - Expandable */}
+                    <div className="mb-4">
+                      {isExpanded ? (
+                        <p className="text-gray-600 leading-relaxed text-sm">
+                          {event.description}
+                        </p>
+                      ) : (
+                        <p className="text-gray-600 leading-relaxed text-sm line-clamp-2">
+                          {event.description.substring(0, 150) + '...'}
+                        </p>
+                      )}
+                      <button
+                        onClick={() => setExpandedEvent(isExpanded ? null : event.id)}
+                        className="text-white font-semibold text-xs mt-2 bg-gradient-to-r from-slate-900 to-blue-900 px-3 py-1 rounded hover:from-slate-800 hover:to-blue-800 transition-colors"
+                      >
+                        {isExpanded ? '- Show Less' : '+ Show More'}
+                      </button>
+                    </div>
+                    
+                    {/* Action Button */}
+                    <div className="flex justify-end">
+                      <a
+                        href={event.locationUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-gradient-to-r from-blue-900 to-slate-900 hover:from-blue-800 hover:to-slate-800 text-white font-semibold px-6 py-2 text-sm transition-colors"
+                      >
+                        ATTEND
+                      </a>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>

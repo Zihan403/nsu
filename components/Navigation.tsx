@@ -82,7 +82,7 @@ export default function Navigation() {
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                  className="flex items-center gap-2 border border-blue-500 text-blue-400 hover:bg-blue-600 hover:text-white hover:border-blue-600 px-3 py-1.5 font-medium text-xs uppercase tracking-wide transition-all rounded"
+                  className="flex items-center gap-2 border border-slate-900 text-white hover:bg-gradient-to-r hover:from-blue-900 hover:to-slate-900 hover:text-white hover:border-slate-900 px-3 py-1.5 font-medium text-xs uppercase tracking-wide transition-all rounded"
                 >
                   {/* Profile Image or Initials */}
                   <div className="w-6 h-6 rounded-full overflow-hidden bg-blue-500 flex items-center justify-center border border-blue-400 flex-shrink-0">
@@ -122,7 +122,10 @@ export default function Navigation() {
                     </Link>
                     <Link
                       href="/profile"
-                      onClick={() => setIsProfileDropdownOpen(false)}
+                      onClick={() => {
+                        console.log('🔗 Navigating to /profile')
+                        setIsProfileDropdownOpen(false)
+                      }}
                       className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
                     >
                       <span>👤</span>

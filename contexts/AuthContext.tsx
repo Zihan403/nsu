@@ -72,7 +72,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             try {
               const profileDoc = await getDoc(doc(db, 'users', user.uid))
               if (profileDoc.exists()) {
-                setUserProfile(profileDoc.data() as UserProfile)
+                const profileData = profileDoc.data() as UserProfile
+                console.log('Profile fetched from Firestore:', profileData)
+                setUserProfile(profileData)
                 profileFetched = true
               } else {
                 // Create profile if it doesn't exist
@@ -96,12 +98,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   }
                 })
 
+                console.log('Creating default profile in Firestore:', newProfile)
                 await setDoc(doc(db, 'users', user.uid), newProfile)
                 setUserProfile(newProfile)
                 profileFetched = true
               }
             } catch (firestoreError: any) {
-              console.error(`Error fetching user profile (attempt ${4 - retries}/3):`, firestoreError)
+              const errorCode = firestoreError?.code || 'UNKNOWN'
+              const errorMsg = firestoreError?.message || 'Unknown error'
+              
+              // Provide helpful error messages
+              let helpText = ''
+              if (errorCode === 'OFFLINE') {
+                helpText = ' (No internet or Firestore unreachable - check Firebase Console)'
+              } else if (errorCode === 'PERMISSION_DENIED') {
+                helpText = ' (Check Firestore Security Rules - may be too restrictive)'
+              } else if (errorCode === 'UNAUTHENTICATED') {
+                helpText = ' (User not authenticated)'
+              }
+              
+              console.error(`❌ Error fetching user profile (attempt ${4 - retries}/3): ${errorCode}${helpText}`, firestoreError)
               retries--
               
               if (retries > 0) {
@@ -109,7 +125,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries)))
               } else {
                 // If all retries fail, create a minimal profile from auth user
-                console.warn('Using fallback profile data due to connection issues')
+                console.warn('⚠️ Using fallback profile data due to connection issues')
+                console.warn('📋 Suggestion: Check Firebase Console Firestore Database status and Security Rules')
                 setUserProfile({
                   uid: user.uid,
                   email: user.email!,
@@ -153,7 +170,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const result = await createUserWithEmailAndPassword(auth, email, password)
     const user = result.user
 
-    // Create user profile in Firestore - remove undefined fields
+    // Create user profile in Firestore with all fields explicitly
     const userProfile: any = {
       uid: user.uid,
       email: user.email!,
@@ -161,6 +178,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       membershipTier: 'basic',
       joinedAt: new Date(),
       emailVerified: false, // Mark as not verified initially
+      // Ensure all fields from additionalInfo are included
+      firstName: additionalInfo?.firstName || '',
+      lastName: additionalInfo?.lastName || '',
+      nsuId: additionalInfo?.nsuId || '',
+      memberId: additionalInfo?.memberId || '',
+      major: additionalInfo?.major || '',
+      phoneNumber: additionalInfo?.phoneNumber || '',
+      // Spread any other additional info
       ...additionalInfo
     }
 
@@ -169,12 +194,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       userProfile.photoURL = user.photoURL
     }
 
-    // Remove any undefined values
+    // Remove any undefined or empty string values (but keep explicit empties from signup)
     Object.keys(userProfile).forEach(key => {
       if (userProfile[key] === undefined) {
         delete userProfile[key]
       }
     })
+
+    // Log what we're saving (for debugging)
+    console.log('Creating user profile in Firestore:', userProfile)
 
     await setDoc(doc(db, 'users', user.uid), userProfile)
     
@@ -228,6 +256,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const updateUserProfile = async (data: Partial<UserProfile>) => {
+    console.log('📤 updateUserProfile called with:', data)
     if (!user) throw new Error('No user logged in')
     
     try {
@@ -237,17 +266,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       while (retries > 0 && !updated) {
         try {
+          console.log(`🔄 Attempt ${4 - retries}/3: Writing to Firestore for user ${user.uid}`)
+          // Merge with existing data
           await setDoc(doc(db, 'users', user.uid), data, { merge: true })
-          const updatedProfile = { ...userProfile, ...data } as UserProfile
-          setUserProfile(updatedProfile)
+          console.log('✅ Write successful')
+          
+          // Fetch fresh data from Firestore to ensure we have the latest
+          console.log('🔍 Fetching fresh profile data...')
+          const freshDoc = await getDoc(doc(db, 'users', user.uid))
+          if (freshDoc.exists()) {
+            const freshData = freshDoc.data() as UserProfile
+            console.log('📦 Fresh profile fetched:', freshData)
+            setUserProfile(freshData)
+          }
+          
           updated = true
+          console.log('🎉 Profile update completed successfully')
         } catch (error: any) {
-          console.error(`Error updating profile (attempt ${4 - retries}/3):`, error)
+          console.error(`❌ Error updating profile (attempt ${4 - retries}/3):`, error)
           retries--
           
           if (retries > 0) {
-            // Wait before retrying
-            await new Promise(resolve => setTimeout(resolve, 1000 * (4 - retries)))
+            const delay = 1000 * (4 - retries)
+            console.log(`⏳ Retrying in ${delay}ms...`)
+            // Wait before retrying (exponential backoff)
+            await new Promise(resolve => setTimeout(resolve, delay))
           } else {
             throw new Error('Failed to update profile. Please check your internet connection and try again.')
           }

@@ -21,42 +21,45 @@ export default function Dashboard() {
   const benefits = [
     {
       id: 1,
-      title: 'HR Block',
+      title: 'Tax Services',
       category: 'Financial Services',
-      discount: '25% OFF',
-      code: 'NSUALUMNI25',
-      description: 'Professional tax services',
+      discount: '10% OFF',
+      code: 'NSUTAX10',
+      description: 'Professional tax advisory services',
       validUntil: 'Dec 31, 2025',
       icon: '💼',
       gradient: 'from-blue-500 to-blue-600',
       lightBg: 'bg-blue-50',
-      textColor: 'text-blue-600'
+      textColor: 'text-blue-600',
+      status: 'active'
     },
     {
       id: 2,
       title: 'MIDAS',
       category: 'Automotive',
-      discount: '$200 OFF',
-      code: 'NSU200OFF',
-      description: 'Driving lessons & car service',
-      validUntil: 'Dec 31, 2025',
+      discount: 'COMING SOON',
+      code: 'MIDAS-SOON',
+      description: 'Car servicing & diagnostics',
+      validUntil: 'Coming soon',
       icon: '🚗',
       gradient: 'from-purple-500 to-purple-600',
       lightBg: 'bg-purple-50',
-      textColor: 'text-purple-600'
+      textColor: 'text-purple-600',
+      status: 'coming-soon'
     },
     {
       id: 3,
-      title: "Hungry Jack's",
+      title: "Dining Perks",
       category: 'Food & Dining',
-      discount: 'FREE',
-      code: 'NSUFRIES',
-      description: 'Free small chips with burger',
-      validUntil: 'Dec 31, 2025',
+      discount: 'COMING SOON',
+      code: 'DINING-SOON',
+      description: 'Exclusive dining benefits',
+      validUntil: 'Coming soon',
       icon: '🍔',
       gradient: 'from-pink-500 to-pink-600',
       lightBg: 'bg-pink-50',
-      textColor: 'text-pink-600'
+      textColor: 'text-pink-600',
+      status: 'coming-soon'
     }
   ]
 
@@ -98,26 +101,46 @@ export default function Dashboard() {
     const cardElement = document.getElementById('member-card')
     if (!cardElement) return
 
+    // Create a temporary clone with a solid background for html2canvas compatibility
+    const clone = cardElement.cloneNode(true) as HTMLElement
+    clone.style.backgroundColor = '#0f172a' // Solid dark blue instead of gradient
+    
+    // Temporarily append to DOM for rendering
+    const tempContainer = document.createElement('div')
+    tempContainer.style.position = 'fixed'
+    tempContainer.style.left = '-9999px'
+    tempContainer.style.top = '-9999px'
+    tempContainer.appendChild(clone)
+    document.body.appendChild(tempContainer)
+
     // Use html2canvas to capture the card
     import('html2canvas').then((html2canvas) => {
-      html2canvas.default(cardElement, {
+      html2canvas.default(clone, {
         scale: 2,
-        backgroundColor: null,
+        backgroundColor: '#0f172a',
         logging: false,
+        useCORS: true,
+        allowTaint: true,
       }).then((canvas) => {
         const link = document.createElement('a')
         link.download = `NSU-Member-Card-${userProfile?.memberId || 'card'}.png`
         link.href = canvas.toDataURL('image/png')
         link.click()
+        
+        // Cleanup
+        document.body.removeChild(tempContainer)
+      }).catch((error) => {
+        console.error('Error downloading member card:', error)
+        document.body.removeChild(tempContainer)
       })
     })
   }
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 via-white to-blue-50">
+      <div className="min-h-screen bg-white">
         {/* Top Stats Bar - Innovative Design */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-6 shadow-lg">
+        <div className="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white py-6 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
@@ -127,20 +150,6 @@ export default function Dashboard() {
                 <div>
                   <h1 className="text-xl font-bold">Welcome back, {userProfile?.displayName || userProfile?.firstName || 'Member'}!</h1>
                   <p className="text-sm text-blue-100">Member since {userProfile?.joinedAt ? new Date(userProfile.joinedAt).getFullYear() : new Date().getFullYear()}</p>
-                </div>
-              </div>
-              <div className="flex gap-6">
-                <div className="text-center">
-                  <div className="text-2xl font-bold">{stats.eventsJoined}</div>
-                  <div className="text-xs text-blue-100">Events Joined</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold">{stats.connections}</div>
-                  <div className="text-xs text-blue-100">Connections</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold">{stats.activeBenefits}</div>
-                  <div className="text-xs text-blue-100">Active Benefits</div>
                 </div>
               </div>
               <button
@@ -183,12 +192,22 @@ export default function Dashboard() {
                             : 'scale-95 opacity-60 hover:opacity-80'
                         }`}
                       >
-                        <div className={`relative bg-gradient-to-br ${benefit.gradient} rounded-xl p-4 text-white h-48 overflow-hidden`}>
+                        <div className={`relative bg-gradient-to-br ${benefit.gradient} rounded-xl p-4 text-white h-48 overflow-hidden ${benefit.status === 'coming-soon' ? 'opacity-75' : ''}`}>
                           {/* Background Pattern */}
                           <div className="absolute inset-0 opacity-10">
                             <div className="absolute top-0 right-0 w-20 h-20 bg-white rounded-full -translate-y-10 translate-x-10"></div>
                             <div className="absolute bottom-0 left-0 w-16 h-16 bg-white rounded-full translate-y-8 -translate-x-8"></div>
                           </div>
+
+                          {/* Coming Soon Overlay */}
+                          {benefit.status === 'coming-soon' && (
+                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center backdrop-blur-sm z-20">
+                              <div className="text-center">
+                                <div className="text-4xl mb-2">🔜</div>
+                                <div className="font-bold text-white">Coming Soon</div>
+                              </div>
+                            </div>
+                          )}
 
                           {/* Content */}
                           <div className="relative z-10 h-full flex flex-col justify-between">
@@ -207,23 +226,29 @@ export default function Dashboard() {
 
                             {/* Promo Code */}
                             <div>
-                              <div className="bg-white/10 backdrop-blur-md rounded-lg p-2.5 border border-white/20">
-                                <div className="text-xs text-white/70 mb-1">Promo Code</div>
-                                <div className="flex items-center justify-between">
-                                  <div className="text-sm font-mono font-bold tracking-wider">
-                                    {benefit.code}
+                              {benefit.status === 'active' ? (
+                                <div className="bg-white/10 backdrop-blur-md rounded-lg p-2.5 border border-white/20">
+                                  <div className="text-xs text-white/70 mb-1">Promo Code</div>
+                                  <div className="flex items-center justify-between">
+                                    <div className="text-sm font-mono font-bold tracking-wider">
+                                      {benefit.code}
+                                    </div>
+                                    <button 
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        navigator.clipboard.writeText(benefit.code)
+                                      }}
+                                      className="bg-white text-blue-600 px-2 py-0.5 rounded text-xs font-semibold hover:bg-blue-50 transition-colors"
+                                    >
+                                      Copy
+                                    </button>
                                   </div>
-                                  <button 
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      navigator.clipboard.writeText(benefit.code)
-                                    }}
-                                    className="bg-white text-blue-600 px-2 py-0.5 rounded text-xs font-semibold hover:bg-blue-50 transition-colors"
-                                  >
-                                    Copy
-                                  </button>
                                 </div>
-                              </div>
+                              ) : (
+                                <div className="bg-white/10 backdrop-blur-md rounded-lg p-2.5 border border-white/20 text-center">
+                                  <div className="text-xs text-white/70">Check back soon for details</div>
+                                </div>
+                              )}
                               
                               <div className="text-xs text-white/60 mt-1.5">
                                 Valid: {benefit.validUntil}
@@ -274,7 +299,14 @@ export default function Dashboard() {
               {/* Digital Membership Card - Unique Design */}
               <div>
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">📇 Digital Member Card</h2>
-                <div id="member-card" className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 rounded-2xl p-8 text-white shadow-2xl overflow-hidden">
+                {/* Debug info - remove in production */}
+                {(!userProfile?.memberId || !userProfile?.nsuId || !userProfile?.major) && (
+                  <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
+                    ⚠️ <strong>Incomplete Profile:</strong> Please complete your profile edit to show Member ID, NSU ID, and Major. 
+                    <Link href="/profile" className="underline ml-1 font-semibold">Edit now</Link>
+                  </div>
+                )}
+                <div id="member-card" className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 rounded-2xl p-8 text-white shadow-2xl overflow-hidden">
                   {/* Background Logo Watermark */}
                   <div className="absolute inset-0 flex items-center justify-center opacity-5">
                     <Image 
@@ -306,7 +338,7 @@ export default function Dashboard() {
                               className="object-cover w-full h-full"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 text-white text-3xl font-bold">
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-700 to-blue-800 text-white text-3xl font-bold">
                               {userProfile?.firstName?.charAt(0) || ''}{userProfile?.lastName?.charAt(0) || ''}
                             </div>
                           )}
@@ -467,39 +499,10 @@ export default function Dashboard() {
               </div>
 
               {/* Activity Timeline - Vertical Design */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h3 className="font-bold text-gray-900 mb-4">Recent Activity</h3>
-                <div className="space-y-4">
-                  {recentActivity.map((activity, index) => (
-                    <div key={index} className="flex gap-3">
-                      <div className={`text-2xl ${activity.color}`}>{activity.icon}</div>
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-900 font-medium">{activity.text}</p>
-                        <p className="text-xs text-gray-500">{activity.time}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <div className="hidden"></div>
 
               {/* Quick Stats - List Style */}
-              <div className="bg-gradient-to-br from-blue-50 to-sky-50 rounded-xl p-6 border-2 border-blue-100">
-                <h3 className="font-bold text-gray-900 mb-4">Your Impact</h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Events Attended</span>
-                    <span className="font-bold text-blue-600">{stats.eventsJoined}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Connections Made</span>
-                    <span className="font-bold text-indigo-600">{stats.connections}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Active Benefits</span>
-                    <span className="font-bold text-teal-600">{stats.activeBenefits}</span>
-                  </div>
-                </div>
-              </div>
+              <div className="hidden"></div>
             </div>
           </div>
         </div>

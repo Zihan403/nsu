@@ -37,7 +37,7 @@ export default function Contact() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20">
+      <div className="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-5xl font-bold mb-6">Get In Touch</h1>
@@ -83,8 +83,8 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">Facebook</h3>
-                  <a href="https://facebook.com/melbnsuers" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 transition-colors">
-                    facebook.com/melbnsuers
+                  <a href="https://www.facebook.com/MelbourneNSUers" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 transition-colors">
+                    facebook.com/MelbourneNSUers
                   </a>
                 </div>
               </div>
@@ -98,8 +98,8 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-1">Instagram</h3>
-                  <a href="https://instagram.com/melbnsuers" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 transition-colors">
-                    @melbnsuers
+                  <a href="https://www.instagram.com/melbournensuers?igsh=MWN1MGVubHR4Njd4" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 transition-colors">
+                    @melbournensuers
                   </a>
                 </div>
               </div>
