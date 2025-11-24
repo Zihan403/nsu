@@ -60,6 +60,12 @@ export default function Home() {
   // Fetch latest upcoming event
   useEffect(() => {
     const fetchLatestEvent = async () => {
+      if (!db) {
+        console.error('Firebase not initialized');
+        setLoadingEvent(false);
+        return;
+      }
+
       try {
         const eventsQuery = query(
           collection(db, 'events'),
