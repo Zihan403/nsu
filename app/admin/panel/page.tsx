@@ -34,7 +34,7 @@ export default function AdminPanel() {
   const isAdmin = userProfile?.email === 'admin@nsu.edu' || userProfile?.isAdmin === true
 
   useEffect(() => {
-    if (!isAdmin) return
+    if (!isAdmin || !db) return
 
     const fetchUsers = async () => {
       try {
