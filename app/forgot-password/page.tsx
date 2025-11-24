@@ -16,6 +16,12 @@ export default function ForgotPassword() {
     setLoading(true)
     setError('')
 
+    if (!auth) {
+      setError('Authentication service not available')
+      setLoading(false)
+      return
+    }
+
     try {
       await sendPasswordResetEmail(auth, email)
       setSuccess(true)

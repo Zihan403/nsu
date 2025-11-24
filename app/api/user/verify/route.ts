@@ -4,6 +4,13 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   try {
+    if (!db) {
+      return NextResponse.json(
+        { error: 'Firebase not initialized' },
+        { status: 503 }
+      )
+    }
+
     const { uid, verifiedVia, phoneVerified, emailVerified } = await request.json()
 
     if (!uid) {

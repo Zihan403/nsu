@@ -80,6 +80,7 @@ export default function AdminPanel() {
   }, [isAdmin])
 
   const updateUserTier = async (uid: string, newTier: string) => {
+    if (!db) return;
     try {
       await updateDoc(doc(db, 'users', uid), {
         membershipTier: newTier
@@ -94,6 +95,7 @@ export default function AdminPanel() {
   }
 
   const toggleAdminStatus = async (uid: string, isAdmin: boolean) => {
+    if (!db) return;
     try {
       await updateDoc(doc(db, 'users', uid), {
         isAdmin: !isAdmin
@@ -108,6 +110,7 @@ export default function AdminPanel() {
   }
 
   const verifyUser = async (uid: string) => {
+    if (!db) return;
     try {
       await updateDoc(doc(db, 'users', uid), {
         emailVerified: true,
@@ -123,6 +126,7 @@ export default function AdminPanel() {
   }
 
   const deleteUser = async (uid: string) => {
+    if (!db) return;
     if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       return
     }

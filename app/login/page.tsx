@@ -180,7 +180,9 @@ export default function Login() {
         try {
           console.log('Attempting sign in...')
           await signIn(email, password)
-          console.log('Sign in successful, user object:', auth.currentUser)
+          if (auth?.currentUser) {
+            console.log('Sign in successful, user object:', auth.currentUser)
+          }
           // Don't set loading to false - let useEffect handle redirect
           // The useEffect will check user.emailVerified and redirect appropriately
         } catch (signInError: any) {

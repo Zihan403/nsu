@@ -7,6 +7,13 @@ export async function GET(
   { params }: { params: Promise<{ uid: string }> }
 ) {
   try {
+    if (!db) {
+      return NextResponse.json(
+        { error: 'Firebase not initialized' },
+        { status: 503 }
+      )
+    }
+
     const { uid } = await params
     const userDoc = await getDoc(doc(db, 'users', uid))
 

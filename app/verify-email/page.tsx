@@ -29,9 +29,14 @@ export default function VerifyEmail() {
   // Monitor email verification status
   useEffect(() => {
     if (!user || redirecting) return
+    
+    if (!auth) {
+      console.error('Firebase auth not initialized')
+      return
+    }
 
     const checkVerification = () => {
-      const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      const unsubscribe = onAuthStateChanged(auth!, async (currentUser) => {
         if (currentUser) {
           await reload(currentUser)
           if (currentUser.emailVerified) {

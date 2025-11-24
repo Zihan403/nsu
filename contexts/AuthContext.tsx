@@ -60,7 +60,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    if (!db) {
+      console.warn('Firebase database not initialized during AuthContext setup')
+      setLoading(false)
+      return
+    }
+
+    const unsubscribe = onAuthStateChanged(auth!, async (user) => {
       try {
         if (user) {
           setUser(user)
@@ -70,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           
           while (retries > 0 && !profileFetched) {
             try {
-              const profileDoc = await getDoc(doc(db, 'users', user.uid))
+              const profileDoc = await getDoc(doc(db!, 'users', user.uid))
               if (profileDoc.exists()) {
                 const profileData = profileDoc.data() as UserProfile
                 console.log('Profile fetched from Firestore:', profileData)
@@ -99,7 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 })
 
                 console.log('Creating default profile in Firestore:', newProfile)
-                await setDoc(doc(db, 'users', user.uid), newProfile)
+                await setDoc(doc(db!, 'users', user.uid), newProfile)
                 setUserProfile(newProfile)
                 profileFetched = true
               }
@@ -153,6 +159,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const signIn = async (email: string, password: string) => {
+    if (!auth) throw new Error('Firebase auth not initialized')
     try {
       await signInWithEmailAndPassword(auth, email, password)
       // Don't check email verification here - let ProtectedRoute handle redirects
@@ -167,6 +174,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signUp = async (email: string, password: string, additionalInfo?: Partial<UserProfile>) => {
+    if (!db) throw new Error('Firebase database not initialized')
+    if (!auth) throw new Error('Firebase auth not initialized')
+    
     const result = await createUserWithEmailAndPassword(auth, email, password)
     const user = result.user
 
@@ -204,7 +214,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Log what we're saving (for debugging)
     console.log('Creating user profile in Firestore:', userProfile)
 
-    await setDoc(doc(db, 'users', user.uid), userProfile)
+    await setDoc(doc(db!, 'users', user.uid), userProfile)
     
     // Update Firebase Auth profile
     await updateProfile(user, {
@@ -219,12 +229,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signInWithGoogle = async () => {
+    if (!db) throw new Error('Firebase database not initialized')
+    if (!auth) throw new Error('Firebase auth not initialized')
+    
     const provider = new GoogleAuthProvider()
     const result = await signInWithPopup(auth, provider)
     const user = result.user
 
     // Check if user profile exists, if not create it
-    const profileDoc = await getDoc(doc(db, 'users', user.uid))
+    const profileDoc = await getDoc(doc(db!, 'users', user.uid))
     if (!profileDoc.exists()) {
       const userProfile: any = {
         uid: user.uid,
@@ -247,17 +260,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       })
 
-      await setDoc(doc(db, 'users', user.uid), userProfile)
+      await setDoc(doc(db!, 'users', user.uid), userProfile)
     }
   }
 
   const logOut = async () => {
+    if (!auth) throw new Error('Firebase auth not initialized')
     await signOut(auth)
   }
 
   const updateUserProfile = async (data: Partial<UserProfile>) => {
     console.log('📤 updateUserProfile called with:', data)
     if (!user) throw new Error('No user logged in')
+    if (!db) throw new Error('Firebase database not initialized')
     
     try {
       // Try to update with retry logic
@@ -268,12 +283,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           console.log(`🔄 Attempt ${4 - retries}/3: Writing to Firestore for user ${user.uid}`)
           // Merge with existing data
-          await setDoc(doc(db, 'users', user.uid), data, { merge: true })
+          await setDoc(doc(db!, 'users', user.uid), data, { merge: true })
           console.log('✅ Write successful')
           
           // Fetch fresh data from Firestore to ensure we have the latest
           console.log('🔍 Fetching fresh profile data...')
-          const freshDoc = await getDoc(doc(db, 'users', user.uid))
+          const freshDoc = await getDoc(doc(db!, 'users', user.uid))
           if (freshDoc.exists()) {
             const freshData = freshDoc.data() as UserProfile
             console.log('📦 Fresh profile fetched:', freshData)

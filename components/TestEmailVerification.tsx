@@ -15,6 +15,11 @@ export default function TestEmailVerification() {
       return
     }
 
+    if (!auth) {
+      setResult('Firebase auth not initialized')
+      return
+    }
+
     setIsLoading(true)
     setResult('Testing...')
 
