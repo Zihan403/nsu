@@ -60,10 +60,8 @@ export default function Footer() {
             <h4 className="text-lg font-semibold mb-4">Support</h4>
             <ul className="space-y-2">
               <li><Link href="/contact" className="text-gray-400 hover:text-white transition-colors">Contact</Link></li>
-              <li><Link href="/giving-back" className="text-gray-400 hover:text-white transition-colors">Give Back</Link></li>
-              <li><Link href="/volunteer" className="text-gray-400 hover:text-white transition-colors">Volunteer</Link></li>
-              <li><Link href="/privacy" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/terms" className="text-gray-400 hover:text-white transition-colors">Terms of Service</Link></li>
+              <li><Link href="/benefits/giving-back" className="text-gray-400 hover:text-white transition-colors">Give Back</Link></li>
+              <li><Link href="/mentoring" className="text-gray-400 hover:text-white transition-colors">Volunteer</Link></li>
             </ul>
           </div>
         </div>
@@ -83,7 +81,7 @@ export default function Footer() {
               © 2025 NSU Alumni Melbourne. All rights reserved.
             </p>
             <div className="text-gray-400 text-sm mt-2 md:mt-0 text-center md:text-right">
-              <p className="mb-1">Made with ❤️ for the NSU community in Melbourne</p>
+              <p className="mb-1">Made for the NSU community in Melbourne</p>
               <p className="text-xs">
                 Developed by <a href="https://www.linkedin.com/in/zihan-sarowar/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 transition-colors underline">Sarowar Hossain Zihan</a>
               </p>

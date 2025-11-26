@@ -30,8 +30,14 @@ export default function AdminPanel() {
   const [filterTier, setFilterTier] = useState('')
   const [filterVerification, setFilterVerification] = useState('')
 
+  // Super admins that cannot be removed
+  const SUPER_ADMINS = ['zihansarowar403@gmail.com', 'melbournensuer@gmail.com']
+  
+  // Check if email is a super admin
+  const isSuperAdmin = (email: string) => SUPER_ADMINS.includes(email.toLowerCase())
+  
   // Check if current user is admin
-  const isAdmin = userProfile?.email === 'admin@nsu.edu' || userProfile?.isAdmin === true
+  const isAdmin = userProfile?.isAdmin === true || isSuperAdmin(userProfile?.email || '')
 
   useEffect(() => {
     if (!isAdmin) return
@@ -94,15 +100,22 @@ export default function AdminPanel() {
     }
   }
 
-  const toggleAdminStatus = async (uid: string, isAdmin: boolean) => {
+  const toggleAdminStatus = async (uid: string, currentIsAdmin: boolean, userEmail: string) => {
     if (!db) return;
+    
+    // Prevent removing super admin status
+    if (isSuperAdmin(userEmail)) {
+      alert('Cannot modify super admin status for protected accounts.')
+      return
+    }
+    
     try {
       await updateDoc(doc(db, 'users', uid), {
-        isAdmin: !isAdmin
+        isAdmin: !currentIsAdmin
       })
       
       setUsers(prev => prev.map(user => 
-        user.uid === uid ? { ...user, isAdmin: !isAdmin } : user
+        user.uid === uid ? { ...user, isAdmin: !currentIsAdmin } : user
       ))
     } catch (error) {
       console.error('Error updating admin status:', error)
@@ -125,8 +138,15 @@ export default function AdminPanel() {
     }
   }
 
-  const deleteUser = async (uid: string) => {
+  const deleteUser = async (uid: string, userEmail: string) => {
     if (!db) return;
+    
+    // Prevent deleting super admins
+    if (isSuperAdmin(userEmail)) {
+      alert('Cannot delete super admin accounts.')
+      return
+    }
+    
     if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       return
     }
@@ -252,10 +272,10 @@ export default function AdminPanel() {
                   onChange={(e) => setFilterTier(e.target.value)}
                   className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-white"
                 >
-                  <option value="">All Tiers</option>
-                  <option value="basic">Basic</option>
-                  <option value="premium">Premium</option>
-                  <option value="lifetime">Lifetime</option>
+                  <option value="" className="bg-white text-gray-900">All Tiers</option>
+                  <option value="basic" className="bg-white text-gray-900">Basic</option>
+                  <option value="premium" className="bg-white text-gray-900">Premium</option>
+                  <option value="lifetime" className="bg-white text-gray-900">Lifetime</option>
                 </select>
               </div>
               
@@ -330,9 +350,9 @@ export default function AdminPanel() {
                               : 'bg-blue-500/20 text-blue-300 border-blue-400/30'
                           }`}
                         >
-                          <option value="basic">Basic</option>
-                          <option value="premium">Premium</option>
-                          <option value="lifetime">Lifetime</option>
+                          <option value="basic" className="bg-white text-gray-900">Basic</option>
+                          <option value="premium" className="bg-white text-gray-900">Premium</option>
+                          <option value="lifetime" className="bg-white text-gray-900">Lifetime</option>
                         </select>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -359,19 +379,30 @@ export default function AdminPanel() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <div className="flex items-center gap-2">
+                          {isSuperAdmin(user.email) ? (
+                            <span className="px-3 py-1 rounded text-xs font-medium bg-yellow-500/20 text-yellow-300 border border-yellow-400/30">
+                              Super Admin
+                            </span>
+                          ) : (
+                            <button
+                              onClick={() => toggleAdminStatus(user.uid, user.isAdmin || false, user.email)}
+                              className={`px-3 py-1 rounded text-xs font-medium border ${
+                                user.isAdmin 
+                                  ? 'bg-red-500/20 text-red-300 border-red-400/30 hover:bg-red-500/30' 
+                                  : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                              }`}
+                            >
+                              {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
+                            </button>
+                          )}
                           <button
-                            onClick={() => toggleAdminStatus(user.uid, user.isAdmin || false)}
+                            onClick={() => deleteUser(user.uid, user.email)}
+                            disabled={isSuperAdmin(user.email)}
                             className={`px-3 py-1 rounded text-xs font-medium border ${
-                              user.isAdmin 
-                                ? 'bg-red-500/20 text-red-300 border-red-400/30 hover:bg-red-500/30' 
-                                : 'bg-white/10 text-white border-white/20 hover:bg-white/20'
+                              isSuperAdmin(user.email)
+                                ? 'bg-gray-500/20 text-gray-400 border-gray-400/30 cursor-not-allowed opacity-50'
+                                : 'bg-red-500/20 text-red-300 border-red-400/30 hover:bg-red-500/30'
                             }`}
-                          >
-                            {user.isAdmin ? 'Remove Admin' : 'Make Admin'}
-                          </button>
-                          <button
-                            onClick={() => deleteUser(user.uid)}
-                            className="px-3 py-1 rounded text-xs font-medium bg-red-500/20 text-red-300 border border-red-400/30 hover:bg-red-500/30"
                           >
                             Delete
                           </button>

@@ -314,6 +314,7 @@ export default function AdminEventsPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-200 mb-2">Event Image (Required)</label>
+                    <p className="text-xs text-gray-400 mb-2">📐 Recommended: 1200 x 675 pixels (16:9 ratio) for best display quality</p>
                     <div className="space-y-2">
                       {!cloudName && (
                         <div className="mb-2 p-3 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs">

@@ -199,11 +199,12 @@ export default function Events() {
                   {/* Event Image - Left Side */}
                   <div className="lg:col-span-2 h-64 lg:h-72 overflow-hidden">
                     <Image
-                      src={event.image || '/api/img/400/300'}
+                      src={event.image || '/api/img/1200/675'}
                       alt={event.title}
-                      width={400}
-                      height={300}
+                      width={1200}
+                      height={675}
                       className="w-full h-full object-cover"
+                      loading="lazy"
                     />
                   </div>
 

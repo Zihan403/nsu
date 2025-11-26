@@ -230,6 +230,7 @@ export default function About() {
                     width={128}
                     height={128}
                     className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
+                    priority
                   />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
@@ -240,13 +241,14 @@ export default function About() {
 
               {/* Vice President */}
               <div className="group">
-                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-blue-900 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
+                <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-slate-900 shadow-lg mx-auto mb-4 group-hover:scale-110 transition-transform duration-300 group-hover:shadow-xl">
                   <Image
                     src="/assets/images/team/Aveen Ali.jpg"
                     alt="Aveen Ali"
                     width={128}
                     height={128}
                     className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
+                    loading="lazy"
                   />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
@@ -267,6 +269,7 @@ export default function About() {
                     width={96}
                     height={96}
                     className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
+                    loading="lazy"
                   />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
@@ -285,6 +288,7 @@ export default function About() {
                     width={96}
                     height={96}
                     className="w-full h-full object-cover object-top scale-125 group-hover:brightness-110 transition-all duration-300"
+                    loading="lazy"
                   />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
@@ -303,6 +307,7 @@ export default function About() {
                     width={96}
                     height={96}
                     className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
+                    loading="lazy"
                   />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
@@ -324,6 +329,7 @@ export default function About() {
                     width={96}
                     height={96}
                     className="w-full h-full object-cover group-hover:brightness-110 transition-all duration-300"
+                    loading="lazy"
                   />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
@@ -342,6 +348,7 @@ export default function About() {
                     width={96}
                     height={96}
                     className="w-full h-full object-cover object-top scale-125 group-hover:brightness-110 transition-all duration-300"
+                    loading="lazy"
                   />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
@@ -360,6 +367,7 @@ export default function About() {
                     width={96}
                     height={96}
                     className="w-full h-full object-cover object-top scale-125 group-hover:brightness-110 transition-all duration-300"
+                    loading="lazy"
                   />
                 </div>
                 <div className="text-center group-hover:transform group-hover:-translate-y-1 transition-transform duration-300">
@@ -382,54 +390,57 @@ export default function About() {
           </div>
           
           <div className="relative">
-            {/* Center vertical line */}
+            {/* Center vertical line - hidden on mobile */}
             <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-400 via-blue-600 to-blue-800"></div>
             
-            <div className="space-y-16">
+            {/* Left vertical line - visible on mobile only */}
+            <div className="md:hidden absolute left-10 top-0 bottom-0 w-1 bg-gradient-to-b from-blue-400 via-blue-600 to-blue-800"></div>
+            
+            <div className="space-y-12 md:space-y-16">
               {milestones.map((milestone, index) => (
                 <div 
                   key={index} 
-                  className={`relative flex flex-col md:flex-row items-center gap-8 ${
+                  className={`relative flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8 ${
                     index % 2 === 0 ? 'md:flex-row-reverse' : ''
                   }`}
                 >
-                  {/* Year badge - center */}
-                  <div className="absolute left-1/2 transform -translate-x-1/2 w-20 h-20 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 rounded-full flex flex-col items-center justify-center shadow-2xl border-4 border-white z-10">
+                  {/* Year badge - left on mobile, center on desktop */}
+                  <div className="flex-shrink-0 w-20 h-20 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-900 rounded-full flex flex-col items-center justify-center shadow-2xl border-4 border-white z-10 md:absolute md:left-1/2 md:transform md:-translate-x-1/2">
                     <span className="text-white font-bold text-xl">{milestone.year}</span>
                   </div>
                   
-                  {/* Content card - alternating sides */}
-                  <div className={`w-full md:w-5/12 ${index % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
-                    <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border-2 border-blue-100 hover:border-blue-300 transform hover:-translate-y-2">
-                      <h3 className={`text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3 ${
+                  {/* Content card - full width on mobile, alternating sides on desktop */}
+                  <div className={`flex-1 md:w-5/12 ${index % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
+                    <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-6 md:p-8 border-2 border-blue-100 hover:border-blue-300 transform hover:-translate-y-2">
+                      <h3 className={`text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6 flex items-center gap-3 ${
                         index % 2 === 0 ? 'md:justify-end' : 'md:justify-start'
                       }`}>
                         <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                           {milestone.title}
                         </span>
                       </h3>
-                      <ul className="space-y-4">
+                      <ul className="space-y-3 md:space-y-4">
                         {milestone.events.map((event, eventIndex) => (
                           <li 
                             key={eventIndex} 
-                            className={`flex items-start gap-3 text-gray-700 ${
+                            className={`flex items-start gap-2 md:gap-3 text-gray-700 ${
                               index % 2 === 0 ? 'md:flex-row-reverse md:text-right' : ''
                             }`}
                           >
-                            <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mt-0.5">
-                              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <div className="flex-shrink-0 w-5 h-5 md:w-6 md:h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mt-0.5">
+                              <svg className="w-3 h-3 md:w-4 md:h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                               </svg>
                             </div>
-                            <span className="leading-relaxed text-base">{event}</span>
+                            <span className="leading-relaxed text-sm md:text-base">{event}</span>
                           </li>
                         ))}
                       </ul>
                     </div>
                   </div>
                   
-                  {/* Spacer for the other side */}
-                  <div className="hidden md:block w-5/12"></div>
+                  {/* Spacer for the other side - desktop only */}
+                  <div className="hidden md:block md:w-5/12"></div>
                 </div>
               ))}
             </div>

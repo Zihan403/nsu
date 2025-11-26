@@ -95,6 +95,8 @@ export default function Benefits() {
                   width={600}
                   height={400}
                   className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-300"
+                  priority={index === 0}
+                  loading={index === 0 ? undefined : 'lazy'}
                 />
                 {/* Discount Badge */}
                 <div className={`absolute top-4 right-4 ${colorClasses[perk.color as keyof typeof colorClasses].badge} text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg`}>

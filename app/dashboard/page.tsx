@@ -312,6 +312,7 @@ export default function Dashboard() {
                       width={300} 
                       height={300}
                       className="object-contain"
+                      priority
                     />
                   </div>
 
@@ -333,6 +334,7 @@ export default function Dashboard() {
                               width={80} 
                               height={80}
                               className="object-cover w-full h-full"
+                              loading="lazy"
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-700 to-blue-800 text-white text-3xl font-bold">
@@ -352,6 +354,7 @@ export default function Dashboard() {
                           width={48} 
                           height={48}
                           className="object-contain"
+                          loading="lazy"
                         />
                       </div>
                     </div>
@@ -416,6 +419,7 @@ export default function Dashboard() {
                         width={80} 
                         height={80}
                         className="object-cover w-full h-full"
+                        loading="lazy"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 text-white text-3xl font-bold">

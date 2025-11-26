@@ -14,7 +14,7 @@ import {
   reload,
   sendPasswordResetEmail
 } from 'firebase/auth'
-import { doc, setDoc, getDoc } from 'firebase/firestore'
+import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore'
 import { auth, db } from '../lib/firebaseConfig'
 
 interface UserProfile {
@@ -58,16 +58,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
-  // Removed runtime retry logic; expects Firebase to be initialized at build-time
+  const [firebaseReady, setFirebaseReady] = useState(false)
+
+  // Wait for Firebase to initialize (handles runtime fallback)
+  useEffect(() => {
+    const checkFirebase = () => {
+      if (auth && db) {
+        setFirebaseReady(true)
+        return true
+      }
+      return false
+    }
+
+    // Check immediately
+    if (checkFirebase()) return
+
+    // If not ready, poll every 100ms for up to 3 seconds
+    let attempts = 0
+    const interval = setInterval(() => {
+      attempts++
+      if (checkFirebase()) {
+        clearInterval(interval)
+      } else if (attempts > 30) {
+        console.error('Firebase failed to initialize after 3 seconds')
+        clearInterval(interval)
+        setLoading(false)
+      }
+    }, 100)
+
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
-    if (!db) {
+    if (!firebaseReady) return
+
+    if (!db || !auth) {
       console.warn('Firebase database not initialized during AuthContext setup')
       setLoading(false)
       return
     }
 
-    const unsubscribe = onAuthStateChanged(auth!, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       try {
         if (user) {
           setUser(user)
@@ -75,11 +106,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           let retries = 3
           let profileFetched = false
           
+          // Super admins that cannot be removed
+          const SUPER_ADMINS = ['zihansarowar403@gmail.com', 'melbournensuer@gmail.com']
+          const isSuperAdmin = SUPER_ADMINS.includes(user.email?.toLowerCase() || '')
+
           while (retries > 0 && !profileFetched) {
             try {
               const profileDoc = await getDoc(doc(db!, 'users', user.uid))
               if (profileDoc.exists()) {
-                const profileData = profileDoc.data() as UserProfile
+                let profileData = profileDoc.data() as UserProfile
+                
+                // Ensure super admins always have admin status
+                if (isSuperAdmin && !profileData.isAdmin) {
+                  await updateDoc(doc(db!, 'users', user.uid), { isAdmin: true })
+                  profileData = { ...profileData, isAdmin: true }
+                }
+                
                 console.log('Profile fetched from Firestore:', profileData)
                 setUserProfile(profileData)
                 profileFetched = true
@@ -90,7 +132,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   email: user.email!,
                   displayName: user.displayName || user.email!.split('@')[0],
                   membershipTier: 'basic',
-                  joinedAt: new Date()
+                  joinedAt: new Date(),
+                  isAdmin: isSuperAdmin // Auto-grant admin to super admins
                 }
 
                 // Only add photoURL if it exists
@@ -157,7 +200,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
 
     return () => unsubscribe()
-  }, [])
+  }, [firebaseReady])
 
   const signIn = async (email: string, password: string) => {
     if (!auth) throw new Error('Firebase auth not initialized')

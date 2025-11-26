@@ -234,9 +234,10 @@ export default function Home() {
                 <Image
                   src={upcomingEvent.image}
                   alt={upcomingEvent.title}
-                  width={400}
-                  height={300}
+                  width={1200}
+                  height={675}
                   className="w-full h-full object-cover"
+                  priority
                 />
               </div>
 

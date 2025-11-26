@@ -180,6 +180,7 @@ export default function AlumniDirectory() {
                           src={member.photoURL}
                           alt={member.displayName}
                           className="w-16 h-16 rounded-full object-cover"
+                          loading="lazy"
                         />
                       ) : (
                         member.displayName.charAt(0).toUpperCase()
