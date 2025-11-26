@@ -10,8 +10,6 @@ const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
 // Dynamically import widget only if cloud name exists to avoid runtime error
 const UploadWidget = cloudName ? dynamic(() => import('next-cloudinary').then(m => m.CldUploadWidget), { ssr: false }) : null
 
-const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-
 export default function EditProfile() {
   const { user, userProfile, updateUserProfile } = useAuth()
   const router = useRouter()

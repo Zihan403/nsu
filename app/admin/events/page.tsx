@@ -10,7 +10,6 @@ import dynamic from 'next/dynamic'
 
 const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
 const UploadWidget = cloudName ? dynamic(() => import('next-cloudinary').then(m => m.CldUploadWidget), { ssr: false }) : null
-const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
 
 interface Event {
   id: string
