@@ -15,6 +15,7 @@ export default function Footer() {
                 width={40} 
                 height={40}
                 className="object-contain rounded"
+                unoptimized
               />
               <div>
                 <h3 className="text-xl font-bold">Melbourne NSUers</h3>

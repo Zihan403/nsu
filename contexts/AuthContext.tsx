@@ -5,8 +5,8 @@ import {
   User,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
-  signInWithPopup,
-  GoogleAuthProvider,
+  // signInWithPopup,
+  // GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
   updateProfile,
@@ -46,7 +46,7 @@ interface AuthContextType {
   loading: boolean
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string, additionalInfo?: Partial<UserProfile>) => Promise<void>
-  signInWithGoogle: () => Promise<void>
+  // signInWithGoogle: () => Promise<void>
   signOut: () => Promise<void>
   updateUserProfile: (data: Partial<UserProfile>) => Promise<void>
   sendEmailVerification: () => Promise<void>
@@ -277,46 +277,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // They won't be able to access protected routes until verified
   }
 
-  const signInWithGoogle = async () => {
-    if (!db) throw new Error('Firebase database not initialized')
-    if (!auth) throw new Error('Firebase auth not initialized')
-    
-    const provider = new GoogleAuthProvider()
-    const result = await signInWithPopup(auth, provider)
-    const user = result.user
-
-    // Check if user profile exists, if not create it
-    const profileDoc = await getDoc(doc(db!, 'users', user.uid))
-    if (!profileDoc.exists()) {
-      // Default admin emails
-      const adminEmails = ['melbournensuers@gmail.com', 'zihansarowar403@gmail.com']
-      const isDefaultAdmin = adminEmails.includes(user.email?.toLowerCase() || '')
-
-      const userProfile: any = {
-        uid: user.uid,
-        email: user.email!,
-        displayName: user.displayName || user.email!.split('@')[0],
-        membershipTier: 'basic',
-        joinedAt: new Date(),
-        emailVerified: user.emailVerified,
-        isAdmin: isDefaultAdmin
-      }
-
-      // Only add photoURL if it exists
-      if (user.photoURL) {
-        userProfile.photoURL = user.photoURL
-      }
-
-      // Remove any undefined values
-      Object.keys(userProfile).forEach(key => {
-        if (userProfile[key] === undefined) {
-          delete userProfile[key]
-        }
-      })
-
-      await setDoc(doc(db!, 'users', user.uid), userProfile)
-    }
-  }
+  // Google sign-in removed
 
   const logOut = async () => {
     if (!auth) throw new Error('Firebase auth not initialized')
@@ -382,7 +343,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loading,
     signIn,
     signUp,
-    signInWithGoogle,
+    // signInWithGoogle,
     signOut: logOut,
     updateUserProfile,
     sendEmailVerification: sendEmailVerificationFunc

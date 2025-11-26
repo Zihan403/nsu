@@ -162,8 +162,11 @@ export default function VerifyEmail() {
           <p className="text-gray-600 mb-4">
             We've sent a verification link to <strong>{user?.email}</strong>
           </p>
-          <p className="text-sm text-gray-500 mb-6">
+          <p className="text-sm text-gray-500 mb-2">
             Click the link in the email to verify your account. This page will automatically update when verified.
+          </p>
+          <p className="text-sm text-yellow-600 mb-6">
+            <strong>Tip:</strong> If you don't see the email, please check your spam or junk folder.
           </p>
         </div>
 
