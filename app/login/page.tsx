@@ -50,22 +50,28 @@ export default function Login() {
   }, [password, isSignUp])
 
   useEffect(() => {
-    // Only redirect if user is already logged in when page loads (not during active login)
-    // Don't interfere with manual redirects from handleSubmit/handleGoogleSignIn
+    // Handle redirect after auth state updates
     console.log('Login useEffect:', { user: !!user, authLoading, emailVerified: user?.emailVerified, isSignUp, loading })
     
-    // Skip if we're actively processing a login (loading state)
-    if (loading) return
+    // Wait for auth to finish loading
+    if (authLoading) return
     
-    if (user && !authLoading && user.emailVerified && !isSignUp) {
-      console.log('Redirecting to dashboard...')
-      router.push('/dashboard')
-    } else if (user && !authLoading && !user.emailVerified && !isSignUp) {
-      // If user is logged in but not verified, send to verification page
-      console.log('Redirecting to verify-account...')
-      router.push('/verify-account')
+    // If we have a user and not in signup flow
+    if (user && !isSignUp) {
+      if (user.emailVerified) {
+        console.log('User verified, redirecting to dashboard...')
+        setLoading(false)
+        router.replace('/dashboard')
+      } else {
+        console.log('User not verified, redirecting to verify-account...')
+        setLoading(false)
+        router.replace('/verify-account')
+      }
+    } else if (!user && !authLoading) {
+      // No user, stop loading spinner
+      setLoading(false)
     }
-  }, [user, authLoading, router, isSignUp, loading])
+  }, [user, authLoading, router, isSignUp])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -182,17 +188,11 @@ export default function Login() {
         // Sign In flow
         try {
           console.log('Attempting sign in...')
-          const result = await signIn(email, password)
-          const signedInUser = auth?.currentUser || result
-          if (signedInUser) {
-            console.log('Sign in successful, redirecting to dashboard')
-            // Use replace to prevent back-button issues; slight delay for auth state to settle
-            setTimeout(() => {
-              router.replace('/dashboard')
-            }, 100)
-          } else {
-            setLoading(false)
-          }
+          await signIn(email, password)
+          
+          // Wait for auth state to update before redirecting
+          // The useEffect will handle the redirect once user is populated
+          console.log('Sign in successful, waiting for auth state update...')
         } catch (signInError: any) {
           console.error('Sign in error:', signInError)
           setError(signInError.message || 'Failed to sign in. Please check your credentials.')
@@ -209,16 +209,9 @@ export default function Login() {
     setLoading(true)
     setError('')
     try {
-      const result = await signInWithGoogle()
-      const signedInUser = auth?.currentUser || result
-      if (signedInUser) {
-        console.log('Google sign in successful, redirecting to dashboard')
-        setTimeout(() => {
-          router.replace('/dashboard')
-        }, 100)
-      } else {
-        setLoading(false)
-      }
+      await signInWithGoogle()
+      console.log('Google sign in successful, waiting for auth state update...')
+      // Let useEffect handle redirect once user object is populated
     } catch (err: any) {
       console.error('Google login error:', err)
       setError(err.message || 'Google login failed')
