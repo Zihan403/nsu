@@ -61,6 +61,37 @@ try {
   console.error('Firebase init error:', error);
 }
 
+// Client-side runtime init fallback: if build-time envs were missing
+async function initAtRuntime() {
+  if (typeof window === 'undefined') return;
+  if (app && auth && db) return;
+  try {
+    const res = await fetch('/api/runtime-env', { cache: 'no-store' });
+    if (!res.ok) return;
+    const env = await res.json();
+    if (env.NEXT_PUBLIC_FIREBASE_API_KEY && env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
+      const cfg = {
+        apiKey: env.NEXT_PUBLIC_FIREBASE_API_KEY,
+        authDomain: env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+        projectId: env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+        storageBucket: env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+        appId: env.NEXT_PUBLIC_FIREBASE_APP_ID,
+        measurementId: env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+      } as any;
+      app = getApps().length === 0 ? initializeApp(cfg) : getApps()[0];
+      auth = getAuth(app);
+      db = getFirestore(app);
+      storage = getStorage(app);
+      console.log('Firebase initialized from runtime env');
+    }
+  } catch {}
+}
+
+if (typeof window !== 'undefined' && (!firebaseConfig.apiKey || !firebaseConfig.projectId)) {
+  setTimeout(initAtRuntime, 0);
+}
+
 // Export references (may be undefined if not initialized)
 
 export { app, auth, db, storage };
