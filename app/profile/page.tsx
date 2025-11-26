@@ -211,26 +211,28 @@ export default function EditProfile() {
                   )}
                 </div>
                 <div className="flex-1 text-center sm:text-left">
-                  <UploadWidget
-                    uploadPreset="nsu_alumni_photos"
-                    onSuccess={handlePhotoUpload}
-                    options={{
-                      maxFileSize: 5242880, // 5MB
-                      folder: 'nsu-alumni/profile-photos',
-                      resourceType: 'image',
-                      clientAllowedFormats: ['jpg', 'jpeg', 'png', 'gif', 'webp']
-                    }}
-                  >
-                    {({ open }: any) => (
-                      <button
-                        type="button"
-                        onClick={() => open()}
-                        className="bg-gradient-to-r from-slate-800 to-blue-800 hover:from-slate-900 hover:to-blue-900 text-white px-8 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md"
-                      >
-                        Choose Photo
-                      </button>
-                    )}
-                  </UploadWidget>
+                  {UploadWidget && (
+                    <UploadWidget
+                      uploadPreset="nsu_alumni_photos"
+                      onSuccess={handlePhotoUpload}
+                      options={{
+                        maxFileSize: 5242880, // 5MB
+                        folder: 'nsu-alumni/profile-photos',
+                        resourceType: 'image',
+                        clientAllowedFormats: ['jpg', 'jpeg', 'png', 'gif', 'webp']
+                      }}
+                    >
+                      {({ open }: any) => (
+                        <button
+                          type="button"
+                          onClick={() => open()}
+                          className="bg-gradient-to-r from-slate-800 to-blue-800 hover:from-slate-900 hover:to-blue-900 text-white px-8 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 shadow-md"
+                        >
+                          Choose Photo
+                        </button>
+                      )}
+                    </UploadWidget>
+                  )}
                   <p className="text-sm text-gray-600 mt-3">
                     JPG, PNG or GIF. Max size 5MB.
                   </p>
