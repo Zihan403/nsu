@@ -4,7 +4,13 @@ import { useAuth } from '../../contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import ProtectedRoute from '../../components/ProtectedRoute'
 import { useState, useEffect } from 'react'
-import { CldUploadWidget } from 'next-cloudinary'
+import dynamic from 'next/dynamic'
+
+const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+// Dynamically import widget only if cloud name exists to avoid runtime error
+const UploadWidget = cloudName ? dynamic(() => import('next-cloudinary').then(m => m.CldUploadWidget), { ssr: false }) : null
+
+const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
 
 export default function EditProfile() {
   const { user, userProfile, updateUserProfile } = useAuth()
@@ -207,7 +213,13 @@ export default function EditProfile() {
                   )}
                 </div>
                 <div className="flex-1 text-center sm:text-left">
-                  <CldUploadWidget
+                  {!cloudName && (
+                    <div className="mb-4 p-4 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm">
+                      Cloudinary is not configured. Please set <code>NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME</code> in Railway variables and redeploy.
+                    </div>
+                  )}
+                  {cloudName && UploadWidget && (
+                  <UploadWidget
                     uploadPreset="nsu_alumni_photos"
                     onSuccess={handlePhotoUpload}
                     options={{
@@ -226,7 +238,8 @@ export default function EditProfile() {
                         Choose Photo
                       </button>
                     )}
-                  </CldUploadWidget>
+                  </UploadWidget>
+                  )}
                   <p className="text-sm text-gray-600 mt-3">
                     JPG, PNG or GIF. Max size 5MB.
                   </p>

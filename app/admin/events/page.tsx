@@ -6,7 +6,11 @@ import { db } from '@/lib/firebaseConfig'
 import { useAuth } from '@/contexts/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import Link from 'next/link'
-import { CldUploadWidget } from 'next-cloudinary'
+import dynamic from 'next/dynamic'
+
+const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+const UploadWidget = cloudName ? dynamic(() => import('next-cloudinary').then(m => m.CldUploadWidget), { ssr: false }) : null
+const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
 
 interface Event {
   id: string
@@ -312,7 +316,13 @@ export default function AdminEventsPage() {
                   <div>
                     <label className="block text-sm font-semibold text-gray-200 mb-2">Event Image (Required)</label>
                     <div className="space-y-2">
-                      <CldUploadWidget
+                      {!cloudName && (
+                        <div className="mb-2 p-3 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs">
+                          Cloudinary not configured. Set <code>NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME</code> and redeploy to enable uploads.
+                        </div>
+                      )}
+                      {cloudName && UploadWidget && (
+                      <UploadWidget
                         uploadPreset="ml_default"
                         onSuccess={(result: any) => {
                           const imageUrl = result?.info?.secure_url
@@ -331,7 +341,8 @@ export default function AdminEventsPage() {
                             📤 {formData.image ? 'Change Image' : 'Upload Image'}
                           </button>
                         )}
-                      </CldUploadWidget>
+                      </UploadWidget>
+                      )}
                       {formData.image && (
                         <div className="relative h-40 w-full border-2 border-blue-500 rounded-lg overflow-hidden">
                           <img
