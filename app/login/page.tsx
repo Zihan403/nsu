@@ -50,19 +50,22 @@ export default function Login() {
   }, [password, isSignUp])
 
   useEffect(() => {
-    // Only redirect VERIFIED users to dashboard
-    // Don't redirect during signup or if email not verified
-    console.log('Login useEffect:', { user: !!user, authLoading, emailVerified: user?.emailVerified, isSignUp })
+    // Only redirect if user is already logged in when page loads (not during active login)
+    // Don't interfere with manual redirects from handleSubmit/handleGoogleSignIn
+    console.log('Login useEffect:', { user: !!user, authLoading, emailVerified: user?.emailVerified, isSignUp, loading })
+    
+    // Skip if we're actively processing a login (loading state)
+    if (loading) return
     
     if (user && !authLoading && user.emailVerified && !isSignUp) {
       console.log('Redirecting to dashboard...')
       router.push('/dashboard')
-    } else if (user && !authLoading && !user.emailVerified) {
+    } else if (user && !authLoading && !user.emailVerified && !isSignUp) {
       // If user is logged in but not verified, send to verification page
       console.log('Redirecting to verify-account...')
       router.push('/verify-account')
     }
-  }, [user, authLoading, router, isSignUp])
+  }, [user, authLoading, router, isSignUp, loading])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -183,14 +186,16 @@ export default function Login() {
           const signedInUser = auth?.currentUser || result
           if (signedInUser) {
             console.log('Sign in successful, redirecting to dashboard')
-            // Redirect immediately; avoid relying solely on auth state effect
-            router.push('/dashboard')
+            // Use replace to prevent back-button issues; slight delay for auth state to settle
+            setTimeout(() => {
+              router.replace('/dashboard')
+            }, 100)
+          } else {
+            setLoading(false)
           }
         } catch (signInError: any) {
           console.error('Sign in error:', signInError)
           setError(signInError.message || 'Failed to sign in. Please check your credentials.')
-        } finally {
-          // Always release spinner regardless of outcome
           setLoading(false)
         }
       }
@@ -207,12 +212,16 @@ export default function Login() {
       const result = await signInWithGoogle()
       const signedInUser = auth?.currentUser || result
       if (signedInUser) {
-        router.push('/dashboard')
+        console.log('Google sign in successful, redirecting to dashboard')
+        setTimeout(() => {
+          router.replace('/dashboard')
+        }, 100)
+      } else {
+        setLoading(false)
       }
     } catch (err: any) {
       console.error('Google login error:', err)
       setError(err.message || 'Google login failed')
-    } finally {
       setLoading(false)
     }
   }
