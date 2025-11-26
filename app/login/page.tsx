@@ -179,15 +179,18 @@ export default function Login() {
         // Sign In flow
         try {
           console.log('Attempting sign in...')
-          await signIn(email, password)
-          if (auth?.currentUser) {
-            console.log('Sign in successful, user object:', auth.currentUser)
+          const result = await signIn(email, password)
+          const signedInUser = auth?.currentUser || result
+          if (signedInUser) {
+            console.log('Sign in successful, redirecting to dashboard')
+            // Redirect immediately; avoid relying solely on auth state effect
+            router.push('/dashboard')
           }
-          // Don't set loading to false - let useEffect handle redirect
-          // The useEffect will check user.emailVerified and redirect appropriately
         } catch (signInError: any) {
           console.error('Sign in error:', signInError)
           setError(signInError.message || 'Failed to sign in. Please check your credentials.')
+        } finally {
+          // Always release spinner regardless of outcome
           setLoading(false)
         }
       }
@@ -200,14 +203,18 @@ export default function Login() {
   const handleGoogleSignIn = async () => {
     setLoading(true)
     setError('')
-    
     try {
-      await signInWithGoogle()
+      const result = await signInWithGoogle()
+      const signedInUser = auth?.currentUser || result
+      if (signedInUser) {
+        router.push('/dashboard')
+      }
     } catch (err: any) {
-      setError(err.message)
+      console.error('Google login error:', err)
+      setError(err.message || 'Google login failed')
+    } finally {
+      setLoading(false)
     }
-    
-    setLoading(false)
   }
 
   return (
