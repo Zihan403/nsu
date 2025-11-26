@@ -4,7 +4,7 @@ import { getAuth, Auth } from "firebase/auth";
 import { getFirestore, enableIndexedDbPersistence, Firestore } from "firebase/firestore";
 import { getStorage, FirebaseStorage } from "firebase/storage";
 
-// Your web app's Firebase configuration
+// Your web app's Firebase configuration (build-time values)
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -36,6 +36,13 @@ let auth: Auth | undefined;
 let db: Firestore | undefined;
 let storage: FirebaseStorage | undefined;
 
+// Helper: fire a window event when Firebase becomes ready
+const notifyReady = () => {
+  if (typeof window !== 'undefined') {
+    try { window.dispatchEvent(new Event('firebase-ready')); } catch {}
+  }
+};
+
 try {
   if (firebaseConfig.projectId && firebaseConfig.apiKey) {
     app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
@@ -64,6 +71,7 @@ try {
     }
     
     storage = getStorage(app);
+    notifyReady();
   } else {
     console.warn('⚠️ Firebase config incomplete - Firebase will not be initialized');
   }
@@ -76,3 +84,44 @@ console.log('   - Project:', firebaseConfig.projectId)
 console.log('   - Auth Domain:', firebaseConfig.authDomain)
 
 export { app, auth, db, storage };
+
+// Runtime fallback for platforms where build-time envs are missing (e.g., Railway cached build)
+// This fetches env values at runtime and initializes Firebase on the client.
+async function initFirebaseAtRuntime() {
+  if (typeof window === 'undefined') return;
+  if (app && auth && db) return;
+
+  try {
+    const res = await fetch('/api/runtime-env', { cache: 'no-store' });
+    if (!res.ok) return;
+    const env = await res.json();
+
+    const runtimeConfig = {
+      apiKey: env.NEXT_PUBLIC_FIREBASE_API_KEY,
+      authDomain: env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+      projectId: env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+      storageBucket: env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+      appId: env.NEXT_PUBLIC_FIREBASE_APP_ID,
+      measurementId: env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+    } as any;
+
+    if (runtimeConfig.projectId && runtimeConfig.apiKey) {
+      app = getApps().length === 0 ? initializeApp(runtimeConfig) : getApps()[0];
+      auth = getAuth(app);
+      db = getFirestore(app);
+      storage = getStorage(app);
+      console.log('✅ Firebase initialized via runtime env:', runtimeConfig.projectId);
+      notifyReady();
+    } else {
+      console.warn('⚠️ Runtime env did not include Firebase config');
+    }
+  } catch (e) {
+    console.warn('⚠️ Failed to initialize Firebase at runtime:', e);
+  }
+}
+
+if (typeof window !== 'undefined' && (!firebaseConfig.projectId || !firebaseConfig.apiKey)) {
+  // Attempt runtime initialization after page load
+  setTimeout(() => { initFirebaseAtRuntime(); }, 0);
+}

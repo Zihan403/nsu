@@ -58,10 +58,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
+  const [retryKey, setRetryKey] = useState(0)
 
   useEffect(() => {
     if (!db) {
       console.warn('Firebase database not initialized during AuthContext setup')
+      // Listen for runtime initialization event from firebaseConfig
+      if (typeof window !== 'undefined') {
+        const onReady = () => setRetryKey((k) => k + 1)
+        window.addEventListener('firebase-ready', onReady)
+        return () => window.removeEventListener('firebase-ready', onReady)
+      }
       setLoading(false)
       return
     }
@@ -156,7 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     })
 
     return () => unsubscribe()
-  }, [])
+  }, [retryKey])
 
   const signIn = async (email: string, password: string) => {
     if (!auth) throw new Error('Firebase auth not initialized')
