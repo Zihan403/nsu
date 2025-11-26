@@ -239,12 +239,13 @@ export default function AdminPanel() {
                   {users.filter(u => u.membershipTier === 'premium' || u.membershipTier === 'lifetime').length}
                 </div>
                 <div className="text-gray-300 text-sm">Premium Members</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-6 text-center">
-              <div className="text-2xl font-bold text-orange-400 mb-2">
-                {users.filter(u => u.joinedAt > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length}
               </div>
-              <div className="text-gray-300 text-sm">New This Month</div>
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-6 text-center">
+                <div className="text-2xl font-bold text-orange-400 mb-2">
+                  {users.filter(u => u.joinedAt > new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)).length}
+                </div>
+                <div className="text-gray-300 text-sm">New This Month</div>
+              </div>
             </div>
           </div>
 
