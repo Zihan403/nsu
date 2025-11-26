@@ -195,25 +195,25 @@ export default function AdminPanel() {
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 mb-8 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold mb-2">Admin Panel</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-2">Admin Panel</h1>
                 <p className="text-blue-200">Manage {users.length} registered users</p>
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-4 sm:mt-0">
                 <Link
                   href="/admin/events"
-                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-3 rounded-lg transition-all font-semibold"
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white px-6 py-3 rounded-lg transition-all font-semibold w-full sm:w-auto"
                 >
                   📅 Manage Events
                 </Link>
                 <Link
                   href="/admin/messages"
-                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-3 rounded-lg transition-all font-semibold"
+                  className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-3 rounded-lg transition-all font-semibold w-full sm:w-auto"
                 >
                   📧 Contact Messages
                 </Link>
                 <Link
                   href="/dashboard"
-                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-lg border border-blue-400/30 transition-all font-semibold"
+                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-lg border border-blue-400/30 transition-all font-semibold w-full sm:w-auto"
                 >
                   👤 Member Dashboard
                 </Link>
@@ -223,21 +223,22 @@ export default function AdminPanel() {
 
           {/* Statistics */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-6 text-center">
-              <div className="text-2xl font-bold text-blue-400 mb-2">{users.length}</div>
-              <div className="text-gray-300 text-sm">Total Users</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-6 text-center">
-              <div className="text-2xl font-bold text-green-400 mb-2">
-                {users.filter(u => u.emailVerified).length}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-6 text-center">
+                <div className="text-2xl font-bold text-blue-400 mb-2">{users.length}</div>
+                <div className="text-gray-300 text-sm">Total Users</div>
               </div>
-              <div className="text-gray-300 text-sm">Verified Users</div>
-            </div>
-            <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-6 text-center">
-              <div className="text-2xl font-bold text-cyan-400 mb-2">
-                {users.filter(u => u.membershipTier === 'premium' || u.membershipTier === 'lifetime').length}
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-6 text-center">
+                <div className="text-2xl font-bold text-green-400 mb-2">
+                  {users.filter(u => u.emailVerified).length}
+                </div>
+                <div className="text-gray-300 text-sm">Verified Users</div>
               </div>
-              <div className="text-gray-300 text-sm">Premium Members</div>
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-6 text-center">
+                <div className="text-2xl font-bold text-cyan-400 mb-2">
+                  {users.filter(u => u.membershipTier === 'premium' || u.membershipTier === 'lifetime').length}
+                </div>
+                <div className="text-gray-300 text-sm">Premium Members</div>
             </div>
             <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl shadow-lg p-6 text-center">
               <div className="text-2xl font-bold text-orange-400 mb-2">

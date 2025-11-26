@@ -193,13 +193,13 @@ export default function AdminEventsPage() {
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 mb-8 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-3xl font-bold mb-2">📅 Manage Events</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-2">📅 Manage Events</h1>
                 <p className="text-blue-200">{events.length} events</p>
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-4 sm:mt-0">
                 <Link
                   href="/admin/panel"
-                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-lg border border-blue-400/30 transition-all font-semibold"
+                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-6 py-3 rounded-lg border border-blue-400/30 transition-all font-semibold w-full sm:w-auto"
                 >
                   ← Admin Panel
                 </Link>
@@ -209,7 +209,7 @@ export default function AdminEventsPage() {
                     setEditingEvent(null)
                     resetForm()
                   }}
-                  className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all"
+                  className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white px-6 py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-cyan-700 transition-all w-full sm:w-auto"
                 >
                   + Create Event
                 </button>

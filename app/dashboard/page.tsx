@@ -136,25 +136,25 @@ export default function Dashboard() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-white">
-        {/* Top Stats Bar - Innovative Design */}
+        {/* Top Stats Bar - Responsive Design */}
         <div className="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white py-6 shadow-lg">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div>
-                <h1 className="text-xl font-bold">Welcome back, {userProfile?.displayName || userProfile?.firstName || 'Member'}!</h1>
+            <div className="flex flex-col sm:flex-row flex-wrap items-center justify-between gap-4">
+              <div className="w-full sm:w-auto mb-2 sm:mb-0">
+                <h1 className="text-xl sm:text-2xl font-bold">Welcome back, {userProfile?.displayName || userProfile?.firstName || 'Member'}!</h1>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
                 {userProfile?.isAdmin && (
                   <Link
                     href="/admin/panel"
-                    className="bg-yellow-500/20 hover:bg-yellow-500/30 backdrop-blur-sm text-yellow-100 px-4 py-2 rounded-lg border border-yellow-400/30 transition-all text-sm font-semibold"
+                    className="bg-yellow-500/20 hover:bg-yellow-500/30 backdrop-blur-sm text-yellow-100 px-4 py-2 rounded-lg border border-yellow-400/30 transition-all text-sm font-semibold w-full sm:w-auto"
                   >
                     🔐 Admin Panel
                   </Link>
                 )}
                 <button
                   onClick={handleLogOut}
-                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg border border-white/30 transition-all text-sm"
+                  className="bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg border border-white/30 transition-all text-sm w-full sm:w-auto"
                 >
                   Sign Out
                 </button>
@@ -164,7 +164,7 @@ export default function Dashboard() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8">
             {/* Main Content - 2 columns */}
             <div className="lg:col-span-2 space-y-8">
               {/* Exclusive Benefits - Modern Carousel */}
@@ -214,15 +214,14 @@ export default function Dashboard() {
                           <div className="relative z-10 h-full flex flex-col justify-between">
                             {/* Header */}
                             <div>
-                              <div className="flex items-center justify-between mb-2">
+                              <div className="flex flex-col sm:flex-row items-center justify-between mb-2 gap-2">
                                 <div className="text-2xl">{benefit.icon}</div>
                                 <div className="bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/30">
                                   <span className="font-bold text-sm">{benefit.discount}</span>
                                 </div>
                               </div>
-                              
-                              <h3 className="text-lg font-bold mb-1">{benefit.title}</h3>
-                              <p className="text-white/80 text-xs mb-2">{benefit.description}</p>
+                              <h3 className="text-lg sm:text-xl font-bold mb-1">{benefit.title}</h3>
+                              <p className="text-white/80 text-xs sm:text-sm mb-2">{benefit.description}</p>
                             </div>
 
                             {/* Promo Code */}
@@ -369,23 +368,25 @@ export default function Dashboard() {
                         </div>
                       </div>
                       <div className="grid grid-cols-3 gap-4">
-                        <div>
-                          <div className="text-xs text-blue-200 mb-1 font-medium">Member ID</div>
-                          <div className="text-base font-mono font-bold bg-white/10 px-3 py-1.5 rounded backdrop-blur-sm">
-                            {userProfile?.memberId || 'NSU-0000'}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          <div>
+                            <div className="text-xs text-blue-200 mb-1 font-medium">Member ID</div>
+                            <div className="text-base font-mono font-bold bg-white/10 px-3 py-1.5 rounded backdrop-blur-sm">
+                              {userProfile?.memberId || 'NSU-0000'}
+                            </div>
                           </div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-blue-200 mb-1 font-medium">NSU ID</div>
-                          <div className="text-base font-mono font-bold bg-white/10 px-3 py-1.5 rounded backdrop-blur-sm">
-                            {userProfile?.nsuId || 'N/A'}
+                          <div>
+                            <div className="text-xs text-blue-200 mb-1 font-medium">NSU ID</div>
+                            <div className="text-base font-mono font-bold bg-white/10 px-3 py-1.5 rounded backdrop-blur-sm">
+                              {userProfile?.nsuId || 'N/A'}
+                            </div>
                           </div>
-                        </div>
-                        <div>
-                          <div className="text-xs text-blue-200 mb-1 font-medium">Status</div>
-                          <div className="text-base font-bold flex items-center gap-1">
-                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                            Active
+                          <div>
+                            <div className="text-xs text-blue-200 mb-1 font-medium">Status</div>
+                            <div className="text-base font-bold flex items-center gap-1">
+                              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                              Active
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -407,7 +408,7 @@ export default function Dashboard() {
             </div>
 
             {/* Sidebar - Activity Feed & Profile */}
-            <div className="space-y-6">
+            <div className="space-y-6 mt-8 lg:mt-0">
               {/* Profile Summary */}
               <div className="bg-white rounded-xl shadow-lg p-6 border-t-4 border-slate-900">
                 <div className="text-center mb-4">

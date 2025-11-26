@@ -159,7 +159,7 @@ export default function EditProfile() {
               </svg>
               Back
             </button>
-            <h1 className="text-4xl font-bold text-gray-900">Edit Profile</h1>
+            <h1 className="text-2xl sm:text-4xl font-bold text-gray-900">Edit Profile</h1>
             <p className="text-gray-600 mt-2">Update your personal information and profile picture</p>
           </div>
 
@@ -188,8 +188,8 @@ export default function EditProfile() {
             <div className="bg-white rounded-xl shadow-md p-8 border-t-4 border-blue-600">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Profile Photo</h2>
               <div className="flex flex-col sm:flex-row items-center gap-6">
-                <div className="relative">
-                  <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-4 border-blue-100 shadow-lg">
+                <div className="relative w-32 h-32 sm:w-40 sm:h-40 mb-4 sm:mb-0">
+                  <div className="w-full h-full rounded-full overflow-hidden bg-gray-100 flex items-center justify-center border-4 border-blue-100 shadow-lg">
                     {photoPreview ? (
                       <img 
                         src={photoPreview} 
@@ -309,7 +309,7 @@ export default function EditProfile() {
             {/* Address Information */}
             <div className="bg-white rounded-xl shadow-md p-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Address</h2>
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="md:col-span-2">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Street Address
