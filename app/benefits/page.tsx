@@ -154,6 +154,7 @@ export default function Benefits() {
                   width={800}
                   height={600}
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-orange-900/40 to-transparent"></div>
                 <div className="absolute top-6 left-6 bg-orange-600 text-white px-6 py-2 rounded-full font-bold text-sm shadow-lg">

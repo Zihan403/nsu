@@ -8,8 +8,12 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 
-const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-const UploadWidget = cloudName ? dynamic(() => import('next-cloudinary').then(m => m.CldUploadWidget), { ssr: false }) : null
+// Use global env variable that works on client side
+const cloudName = typeof window !== 'undefined' 
+  ? (window as any).ENV?.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+  : process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+
+const UploadWidget = dynamic(() => import('next-cloudinary').then(m => m.CldUploadWidget), { ssr: false })
 
 interface Event {
   id: string
@@ -316,12 +320,6 @@ export default function AdminEventsPage() {
                     <label className="block text-sm font-semibold text-gray-200 mb-2">Event Image (Required)</label>
                     <p className="text-xs text-gray-400 mb-2">📐 Recommended: 1200 x 675 pixels (16:9 ratio) for best display quality</p>
                     <div className="space-y-2">
-                      {!cloudName && (
-                        <div className="mb-2 p-3 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs">
-                          Cloudinary not configured. Set <code>NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME</code> and redeploy to enable uploads.
-                        </div>
-                      )}
-                      {cloudName && UploadWidget && (
                       <UploadWidget
                         uploadPreset="ml_default"
                         onSuccess={(result: any) => {
@@ -342,7 +340,6 @@ export default function AdminEventsPage() {
                           </button>
                         )}
                       </UploadWidget>
-                      )}
                       {formData.image && (
                         <div className="relative h-40 w-full border-2 border-blue-500 rounded-lg overflow-hidden">
                           <img

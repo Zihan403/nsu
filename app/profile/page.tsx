@@ -211,12 +211,6 @@ export default function EditProfile() {
                   )}
                 </div>
                 <div className="flex-1 text-center sm:text-left">
-                  {!cloudName && (
-                    <div className="mb-4 p-4 rounded-lg bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm">
-                      Cloudinary is not configured. Please set <code>NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME</code> in Railway variables and redeploy.
-                    </div>
-                  )}
-                  {cloudName && UploadWidget && (
                   <UploadWidget
                     uploadPreset="nsu_alumni_photos"
                     onSuccess={handlePhotoUpload}
@@ -237,7 +231,6 @@ export default function EditProfile() {
                       </button>
                     )}
                   </UploadWidget>
-                  )}
                   <p className="text-sm text-gray-600 mt-3">
                     JPG, PNG or GIF. Max size 5MB.
                   </p>

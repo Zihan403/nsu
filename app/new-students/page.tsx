@@ -311,6 +311,7 @@ export default function NewStudentsPage() {
                       width={192}
                       height={192}
                       className="w-full h-full object-cover"
+                      priority
                     />
                   </div>
                   <h3 className="text-xl font-bold text-gray-900 mb-1">Tanveer Masud</h3>
@@ -371,10 +372,13 @@ export default function NewStudentsPage() {
               >
                 <div className="flex flex-col items-center text-center">
                   <div className="w-20 h-20 mb-4 rounded-xl overflow-hidden bg-white shadow-md flex items-center justify-center">
-                    <img 
+                    <Image 
                       src={app.logo} 
                       alt={app.name}
+                      width={80}
+                      height={80}
                       className="w-full h-full object-contain"
+                      loading="lazy"
                     />
                   </div>
                   <h3 className="font-semibold text-lg text-gray-800 mb-1">{app.name}</h3>
