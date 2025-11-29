@@ -24,8 +24,9 @@ export default function Dashboard() {
       title: 'The Hopkins Group',
       category: 'Financial Services',
       discount: '10% OFF',
-      code: 'HOPKINS10',
+      code: '',
       description: 'Financial planning & accounting',
+      contact: 'Contact: arashedi@thehopkinsgroup.com.au',
       icon: '💼',
       gradient: 'from-blue-500 to-blue-600',
       lightBg: 'bg-blue-50',
@@ -34,11 +35,12 @@ export default function Dashboard() {
     },
     {
       id: 2,
-      title: 'RRAE Pty Ltd',
+      title: 'Subway Skye',
       category: 'Subway Skye',
       discount: '10% OFF',
-      code: 'SUBWAY10',
+      code: '',
       description: 'Exclusive in-store discount',
+      contact: 'Show the member card instore',
       icon: '🥪',
       gradient: 'from-green-500 to-green-600',
       lightBg: 'bg-green-50',
@@ -187,13 +189,13 @@ export default function Dashboard() {
                       <div
                         key={benefit.id}
                         onClick={() => scrollToSlide(index)}
-                        className={`flex-shrink-0 w-56 snap-center transition-all duration-500 cursor-pointer ${
+                        className={`flex-shrink-0 w-64 max-w-xs snap-center transition-all duration-500 cursor-pointer ${
                           currentSlide === index 
                             ? 'scale-105 shadow-xl' 
                             : 'scale-95 opacity-60 hover:opacity-80'
                         }`}
                       >
-                        <div className={`relative bg-gradient-to-br ${benefit.gradient} rounded-xl p-4 text-white h-48 overflow-hidden ${benefit.status === 'coming-soon' ? 'opacity-75' : ''}`}>
+                        <div className={`relative bg-gradient-to-br ${benefit.gradient} rounded-xl p-4 text-white h-64 overflow-y-auto ${benefit.status === 'coming-soon' ? 'opacity-75' : ''}`}>
                           {/* Background Pattern */}
                           <div className="absolute inset-0 opacity-10">
                             <div className="absolute top-0 right-0 w-20 h-20 bg-white rounded-full -translate-y-10 translate-x-10"></div>
@@ -216,17 +218,40 @@ export default function Dashboard() {
                             <div>
                               <div className="flex flex-col sm:flex-row items-center justify-between mb-2 gap-2">
                                 <div className="text-2xl">{benefit.icon}</div>
-                                <div className="bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/30">
-                                  <span className="font-bold text-sm">{benefit.discount}</span>
-                                </div>
                               </div>
                               <h3 className="text-lg sm:text-xl font-bold mb-1">{benefit.title}</h3>
-                              <p className="text-white/80 text-xs sm:text-sm mb-2">{benefit.description}</p>
+                              {/* Only show description/discount for non-coming-soon or id === 3 */}
+                              {(benefit.status !== 'coming-soon' || benefit.id === 3) && (
+                                <>
+                                  <div className="bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/30">
+                                    <span className="font-bold text-sm">{benefit.discount}</span>
+                                  </div>
+                                  <p className="text-white/80 text-xs sm:text-sm mb-2">{benefit.description}</p>
+                                </>
+                              )}
                             </div>
 
                             {/* Promo Code */}
                             <div>
-                              {benefit.status === 'active' ? (
+                              {benefit.status === 'active' && benefit.id === 1 ? (
+                                <div className="bg-white/10 backdrop-blur-md rounded-lg p-2.5 border border-white/20">
+                                  <div className="flex flex-col gap-1 w-full">
+                                    <div className="text-xs text-white/70 mb-1">Contact Details</div>
+                                    <div className="text-sm font-mono font-bold tracking-wider break-words w-full whitespace-normal">
+                                      {benefit.contact}
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : benefit.status === 'active' && benefit.id === 2 ? (
+                                <div className="bg-white/10 backdrop-blur-md rounded-lg p-2.5 border border-white/20">
+                                  <div className="flex flex-col gap-1 w-full">
+                                    <div className="text-xs text-white/70 mb-1">How to Avail</div>
+                                    <div className="text-sm font-mono font-bold tracking-wider break-words w-full whitespace-normal">
+                                      {benefit.contact}
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : benefit.status === 'active' ? (
                                 <div className="bg-white/10 backdrop-blur-md rounded-lg p-2.5 border border-white/20">
                                   <div className="text-xs text-white/70 mb-1">Promo Code</div>
                                   <div className="flex items-center justify-between">
@@ -367,26 +392,24 @@ export default function Dashboard() {
                             : userProfile?.displayName || 'NSU Member'}
                         </div>
                       </div>
-                      <div className="grid grid-cols-3 gap-4">
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                          <div>
-                            <div className="text-xs text-blue-200 mb-1 font-medium">Member ID</div>
-                            <div className="text-base font-mono font-bold bg-white/10 px-3 py-1.5 rounded backdrop-blur-sm">
-                              {userProfile?.memberId || 'NSU-0000'}
-                            </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                          <div className="text-xs text-blue-200 mb-1 font-medium">Member ID</div>
+                          <div className="text-base font-mono font-bold bg-white/10 px-3 py-1.5 rounded backdrop-blur-sm truncate break-all min-w-0">
+                            {userProfile?.memberId || 'NSU-0000'}
                           </div>
-                          <div>
-                            <div className="text-xs text-blue-200 mb-1 font-medium">NSU ID</div>
-                            <div className="text-base font-mono font-bold bg-white/10 px-3 py-1.5 rounded backdrop-blur-sm">
-                              {userProfile?.nsuId || 'N/A'}
-                            </div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-blue-200 mb-1 font-medium">NSU ID</div>
+                          <div className="text-base font-mono font-bold bg-white/10 px-3 py-1.5 rounded backdrop-blur-sm truncate break-all min-w-0">
+                            {userProfile?.nsuId || 'N/A'}
                           </div>
-                          <div>
-                            <div className="text-xs text-blue-200 mb-1 font-medium">Status</div>
-                            <div className="text-base font-bold flex items-center gap-1">
-                              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                              Active
-                            </div>
+                        </div>
+                        <div>
+                          <div className="text-xs text-blue-200 mb-1 font-medium">Status</div>
+                          <div className="text-base font-bold flex items-center gap-1">
+                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            Active
                           </div>
                         </div>
                       </div>
