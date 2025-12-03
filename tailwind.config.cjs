@@ -10,8 +10,10 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'sans': ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        'sans': ['var(--font-montserrat)', 'system-ui', 'sans-serif'],
+        'inter': ['var(--font-inter)', 'system-ui', 'sans-serif'],
         'playfair': ['var(--font-playfair)', 'serif'],
+        'montserrat': ['var(--font-montserrat)', 'system-ui', 'sans-serif'],
       },
       colors: {
         background: "var(--background)",

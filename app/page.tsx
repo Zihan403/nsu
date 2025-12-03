@@ -146,7 +146,7 @@ export default function Home() {
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-gray-600 text-lg leading-relaxed">
-                <div>
+                <div className="text-justify">
                   <p className="mb-6">
                     Melbourne NSUers unites North South University graduates in Melbourne to foster connection, professional growth, 
                     and community impact. We create opportunities for alumni to network, support one another, and give back to the 
@@ -157,7 +157,7 @@ export default function Home() {
                     and community gatherings. Keep your connection strong by updating your profile so you never miss the moments that matter.
                   </p>
                 </div>
-                <div>
+                <div className="text-justify">
                   <p className="mb-6">
                     Build meaningful connections through our mentorship programs and career development initiatives. Whether you're 
                     a recent graduate or an experienced professional, there's a place for you in our growing community.
