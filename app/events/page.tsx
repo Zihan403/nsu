@@ -213,7 +213,7 @@ export default function Events() {
                     {/* Date and Time Header */}
                     <div className="mb-3 pb-3 border-b border-gray-200">
                       <div className="text-xs font-semibold text-blue-600 uppercase tracking-wide">
-                        📅 {formatDate(event.date)} • {formatTime(event.time)}
+                        {formatDate(event.date)} • {formatTime(event.time)}
                       </div>
                     </div>
                     

@@ -6,85 +6,198 @@ import Link from 'next/link'
 import ProtectedRoute from '../../components/ProtectedRoute'
 import Image from 'next/image'
 import { useState, useRef, useEffect } from 'react'
+import { collection, getDocs, query, orderBy } from 'firebase/firestore'
+import { db } from '@/lib/firebaseConfig'
+
+interface Benefit {
+  id: string
+  title: string
+  discount: string
+  description: string
+  image: string
+  color: string
+  link: string
+  isExternal: boolean
+  status: string
+  contactEmail?: string
+  instructions?: string
+  promoCode?: string
+  partner?: string
+  terms?: string
+}
 
 export default function Dashboard() {
   const { user, userProfile, signOut } = useAuth()
   const router = useRouter()
-  const [currentSlide, setCurrentSlide] = useState(1) // Start at middle card
-  const carouselRef = useRef<HTMLDivElement>(null)
+
+  const [benefits, setBenefits] = useState<Benefit[]>([]);
+  const [loadingBenefits, setLoadingBenefits] = useState(true);
+  const [selectedBenefit, setSelectedBenefit] = useState<Benefit | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showProfileReminder, setShowProfileReminder] = useState(true);
+
+  const openModal = (benefit: Benefit) => {
+    setSelectedBenefit(benefit);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedBenefit(null);
+    setIsModalOpen(false);
+  };
 
   const handleLogOut = async () => {
     await signOut()
     router.push('/')
   }
 
-  const benefits = [
+  // Check if profile is incomplete
+  const checkIncompleteFields = () => {
+    if (!userProfile) return { isIncomplete: false, missingFields: [] };
+    
+    const missingFields: string[] = [];
+    
+    if (!userProfile.phoneNumber || userProfile.phoneNumber.trim() === '') missingFields.push('Phone Number');
+    if (!userProfile.address || userProfile.address.trim() === '') missingFields.push('Address');
+    if (!userProfile.major || userProfile.major.trim() === '') missingFields.push('Major');
+    if (!userProfile.nsuId || userProfile.nsuId.trim() === '') missingFields.push('NSU ID');
+    if (!userProfile.currentJob || userProfile.currentJob.trim() === '') missingFields.push('Current Job');
+    if (!userProfile.company || userProfile.company.trim() === '') missingFields.push('Company');
+    if (!userProfile.industry || userProfile.industry.trim() === '') missingFields.push('Industry');
+    if (!userProfile.workLocation || userProfile.workLocation.trim() === '') missingFields.push('Work Location');
+    
+    return {
+      isIncomplete: missingFields.length > 0,
+      missingFields
+    };
+  };
+
+  const profileStatus = checkIncompleteFields();
+
+  // Static benefits as fallback
+  const staticBenefits: Benefit[] = [
     {
-      id: 1,
+      id: '1',
       title: 'The Hopkins Group',
-      category: 'Financial Services',
       discount: '10% OFF',
-      code: '',
       description: 'Financial planning & accounting',
-      contact: 'Contact: arashedi@thehopkinsgroup.com.au',
-      icon: '💼',
-      gradient: 'from-blue-500 to-blue-600',
-      lightBg: 'bg-blue-50',
-      textColor: 'text-blue-600',
-      status: 'active'
+      image: '',
+      color: '#3B82F6',
+      link: '',
+      isExternal: false,
+      status: 'active',
+      contactEmail: 'arashedi@thehopkinsgroup.com.au',
+      instructions: 'Contact: arashedi@thehopkinsgroup.com.au'
     },
     {
-      id: 2,
+      id: '2',
       title: 'Subway Skye',
-      category: 'Subway Skye',
       discount: '10% OFF',
-      code: '',
       description: 'Exclusive in-store discount',
-      contact: 'Show the member card instore',
-      icon: '🥪',
-      gradient: 'from-green-500 to-green-600',
-      lightBg: 'bg-green-50',
-      textColor: 'text-green-600',
-      status: 'active'
+      image: '',
+      color: '#10B981',
+      link: '',
+      isExternal: false,
+      status: 'active',
+      contactEmail: '',
+      instructions: 'Show the member card instore'
     },
     {
-      id: 3,
+      id: '3',
       title: "More Partners",
-      category: 'Coming Soon',
       discount: 'COMING SOON',
-      code: 'SOON',
       description: 'Exciting new partnerships',
-      icon: '🎉',
-      gradient: 'from-purple-500 to-purple-600',
-      lightBg: 'bg-purple-50',
-      textColor: 'text-purple-600',
-      status: 'coming-soon'
+      image: '',
+      color: '#8B5CF6',
+      link: '',
+      isExternal: false,
+      status: 'coming-soon',
+      contactEmail: '',
+      instructions: 'Check back soon for details'
     }
   ]
 
-  const scrollToSlide = (index: number) => {
-    setCurrentSlide(index)
-    if (carouselRef.current) {
-      const cards = carouselRef.current.children
-      if (cards[index]) {
-        cards[index].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+  // Fetch benefits from Firestore
+  useEffect(() => {
+    const fetchBenefits = async () => {
+      try {
+        setLoadingBenefits(true)
+        if (!db) {
+          console.warn('Firebase not initialized, using static benefits')
+          setBenefits(staticBenefits)
+          setLoadingBenefits(false)
+          return
+        }
+        const benefitsRef = collection(db, 'benefits')
+        const querySnapshot = await getDocs(benefitsRef)
+        const fetchedBenefits: Benefit[] = []
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data()
+          fetchedBenefits.push({
+            id: doc.id,
+            title: data.title || '',
+            description: data.description || '',
+            image: data.image || '',
+            discount: data.discount || '',
+            color: data.color || '#3B82F6',
+            link: data.link || '',
+            isExternal: data.isExternal || false,
+            status: data.status || 'active',
+            contactEmail: data.contactEmail || '',
+            instructions: data.instructions || data.contact || '',
+            promoCode: data.promoCode || data.code || '',
+            partner: data.partner || '',
+            terms: data.terms || ''
+          })
+        })
+
+        setBenefits(fetchedBenefits.length > 0 ? fetchedBenefits : staticBenefits)
+      } catch (error) {
+        console.error('Error fetching benefits:', error)
+        // Keep static benefits as fallback
+        setBenefits(staticBenefits)
+      } finally {
+        setLoadingBenefits(false)
       }
     }
+
+    fetchBenefits()
+  }, [])
+
+  // Helper functions to get display properties from benefit data
+  const getBenefitIcon = (benefit: Benefit) => {
+    if (benefit.title.includes('Hopkins')) return '💼'
+    if (benefit.title.includes('Subway')) return '🥪'
+    if (benefit.status === 'coming-soon') return '🎉'
+    return '🎁'
   }
 
-  const nextSlide = () => {
-    const next = (currentSlide + 1) % benefits.length
-    scrollToSlide(next)
+  const getBenefitGradient = (benefit: Benefit) => {
+    // Handle hex color codes
+    if (benefit.color === '#10B981' || benefit.color === 'green' || benefit.color.includes('green')) return 'from-green-500 to-green-600'
+    if (benefit.color === '#3B82F6' || benefit.color === 'blue' || benefit.color.includes('blue')) return 'from-blue-500 to-blue-600'
+    if (benefit.color === '#8B5CF6' || benefit.color === 'purple' || benefit.color.includes('purple')) return 'from-purple-500 to-purple-600'
+    if (benefit.color === '#F59E0B' || benefit.color === 'yellow' || benefit.color.includes('yellow')) return 'from-yellow-500 to-yellow-600'
+    if (benefit.color === '#EF4444' || benefit.color === 'red' || benefit.color.includes('red')) return 'from-red-500 to-red-600'
+    if (benefit.color === '#6B7280' || benefit.color === 'gray' || benefit.color.includes('gray')) return 'from-gray-500 to-gray-600'
+    
+    // Default fallback
+    return 'from-blue-500 to-blue-600'
   }
 
-  const prevSlide = () => {
-    const prev = (currentSlide - 1 + benefits.length) % benefits.length
-    scrollToSlide(prev)
+  const getBenefitCode = (benefit: Benefit) => {
+    // Only return code if there's an actual promo code in the benefit data
+    if (benefit.status === 'coming-soon') return 'SOON'
+    // Check if there's a promo code field in the original data (we'll need to add this)
+    return '' // Default to empty - only show if promo code exists
   }
+
+
 
   const recentActivity = [
-    { icon: '✅', text: 'You registered for "Annual Networking Night"', time: '2 hours ago', color: 'text-green-600' },
-    { icon: '🎉', text: 'Welcome to NSU Alumni Melbourne!', time: '1 day ago', color: 'text-blue-600' },
+    { icon: '✓', text: 'You registered for "Annual Networking Night"', time: '2 hours ago', color: 'text-green-600' },
+    { icon: '★', text: 'Welcome to NSU Alumni Melbourne!', time: '1 day ago', color: 'text-blue-600' },
     { icon: '👋', text: 'Your profile was completed successfully', time: '1 day ago', color: 'text-purple-600' },
   ]
 
@@ -92,7 +205,7 @@ export default function Dashboard() {
   const stats = {
     eventsJoined: userProfile?.eventsJoined || 0,
     connections: userProfile?.connections || 0,
-    activeBenefits: 3 // Default benefits for all members
+    activeBenefits: loadingBenefits ? 3 : (benefits.length > 0 ? benefits.filter(b => b.status === 'active').length : staticBenefits.filter(b => b.status === 'active').length)
   }
 
   // Function to download the member card
@@ -165,6 +278,56 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Profile Completion Reminder */}
+        {profileStatus.isIncomplete && showProfileReminder && (
+          <div className="bg-gradient-to-r from-orange-50 to-amber-50 border-l-4 border-orange-500 shadow-lg">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-start gap-3 flex-1">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-semibold text-orange-800 mb-1">
+                      Complete Your Profile
+                    </h3>
+                    <p className="text-sm text-orange-700 mb-2">
+                      Your profile is incomplete. Please update the following fields to get the most out of your membership:
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {profileStatus.missingFields.map((field, index) => (
+                        <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                          {field}
+                        </span>
+                      ))}
+                    </div>
+                    <Link
+                      href="/profile"
+                      className="inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
+                    >
+                      Update Profile Now
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowProfileReminder(false)}
+                  className="flex-shrink-0 text-orange-600 hover:text-orange-800 transition-colors"
+                  aria-label="Dismiss notification"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8">
             {/* Main Content - 2 columns */}
@@ -172,154 +335,104 @@ export default function Dashboard() {
               {/* Exclusive Benefits - Modern Carousel */}
               <div>
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">🎁 Your Exclusive Benefits</h2>
+                  <h2 className="text-2xl font-bold text-gray-900">Your Exclusive Benefits</h2>
                   <Link href="/benefits" className="text-blue-600 hover:text-blue-700 text-sm font-semibold">
                     View All →
                   </Link>
                 </div>
                 
-                <div className="relative">
-                  {/* Carousel Container */}
-                  <div 
-                    ref={carouselRef}
-                    className="flex gap-4 overflow-x-auto scroll-smooth pb-6 px-4 snap-x snap-mandatory scrollbar-hide"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                  >
-                    {benefits.map((benefit, index) => (
-                      <div
-                        key={benefit.id}
-                        onClick={() => scrollToSlide(index)}
-                        className={`flex-shrink-0 w-64 max-w-xs snap-center transition-all duration-500 cursor-pointer ${
-                          currentSlide === index 
-                            ? 'scale-105 shadow-xl' 
-                            : 'scale-95 opacity-60 hover:opacity-80'
-                        }`}
-                      >
-                        <div className={`relative bg-gradient-to-br ${benefit.gradient} rounded-xl p-4 text-white h-64 overflow-y-auto ${benefit.status === 'coming-soon' ? 'opacity-75' : ''}`}>
-                          {/* Background Pattern */}
-                          <div className="absolute inset-0 opacity-10">
-                            <div className="absolute top-0 right-0 w-20 h-20 bg-white rounded-full -translate-y-10 translate-x-10"></div>
-                            <div className="absolute bottom-0 left-0 w-16 h-16 bg-white rounded-full translate-y-8 -translate-x-8"></div>
+                {/* Benefits Grid */}
+                <div className="space-y-4">
+                  {loadingBenefits ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {[...Array(8)].map((_, i) => (
+                        <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-200">
+                          <div className="bg-gray-200 animate-pulse rounded-t-xl h-32"></div>
+                          <div className="p-4">
+                            <div className="bg-gray-200 animate-pulse h-4 rounded mb-2"></div>
+                            <div className="bg-gray-200 animate-pulse h-3 rounded w-3/4 mb-2"></div>
+                            <div className="bg-gray-200 animate-pulse h-6 rounded w-1/2"></div>
                           </div>
-
-                          {/* Coming Soon Overlay */}
-                          {benefit.status === 'coming-soon' && (
-                            <div className="absolute inset-0 bg-black/20 flex items-center justify-center backdrop-blur-sm z-20">
-                              <div className="text-center">
-                                <div className="text-4xl mb-2">🔜</div>
-                                <div className="font-bold text-white">Coming Soon</div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {(benefits.length > 0 ? benefits : staticBenefits).map((benefit) => (
+                        <div
+                          key={benefit.id}
+                          onClick={() => openModal(benefit)}
+                          className="bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer overflow-hidden group hover:-translate-y-1"
+                        >
+                          {/* Image Section */}
+                          <div className="relative h-40 bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center overflow-hidden">
+                            {benefit.image ? (
+                              <img
+                                src={benefit.image}
+                                alt={benefit.title}
+                                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-200"
+                              />
+                            ) : (
+                              <div className="text-6xl opacity-80">
+                                {getBenefitIcon(benefit)}
                               </div>
+                            )}
+                            {/* Status Badge */}
+                            <div className="absolute top-2 right-2">
+                              <span className={`text-white text-xs px-2 py-1 rounded-full font-medium shadow-sm ${
+                                benefit.status === 'active' ? 'bg-green-500' : 
+                                benefit.status === 'coming-soon' ? 'bg-yellow-500' : 'bg-gray-500'
+                              }`}>
+                                {benefit.status === 'active' ? 'Active' : benefit.status === 'coming-soon' ? 'Coming Soon' : benefit.status}
+                              </span>
                             </div>
-                          )}
+                          </div>
+                          
+                          {/* Content Section */}
+                          <div className="p-4">
+                            <h3 className="font-bold text-gray-800 text-base mb-2 line-clamp-2 leading-tight">
+                              {benefit.title}
+                            </h3>
+                            
+                            {/* Discount/Offer Display */}
+                            <div className="mb-3">
+                              <span className="text-blue-600 font-bold text-xl">
+                                {benefit.discount}
+                              </span>
+                            </div>
 
-                          {/* Content */}
-                          <div className="relative z-10 h-full flex flex-col justify-between">
-                            {/* Header */}
-                            <div>
-                              <div className="flex flex-col sm:flex-row items-center justify-between mb-2 gap-2">
-                                <div className="text-2xl">{benefit.icon}</div>
+                            {/* Promo Code Preview */}
+                            {benefit.promoCode && benefit.promoCode.trim() !== '' && (
+                              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-2 mb-3">
+                                <div className="text-xs text-yellow-700 font-medium mb-1">Promo Code:</div>
+                                <div className="text-sm font-mono font-bold text-yellow-800">
+                                  {benefit.promoCode}
+                                </div>
                               </div>
-                              <h3 className="text-lg sm:text-xl font-bold mb-1">{benefit.title}</h3>
-                              {/* Only show description/discount for non-coming-soon or id === 3 */}
-                              {(benefit.status !== 'coming-soon' || benefit.id === 3) && (
-                                <>
-                                  <div className="bg-white/20 backdrop-blur-sm px-2.5 py-1 rounded-full border border-white/30">
-                                    <span className="font-bold text-sm">{benefit.discount}</span>
-                                  </div>
-                                  <p className="text-white/80 text-xs sm:text-sm mb-2">{benefit.description}</p>
-                                </>
-                              )}
-                            </div>
+                            )}
 
-                            {/* Promo Code */}
-                            <div>
-                              {benefit.status === 'active' && benefit.id === 1 ? (
-                                <div className="bg-white/10 backdrop-blur-md rounded-lg p-2.5 border border-white/20">
-                                  <div className="flex flex-col gap-1 w-full">
-                                    <div className="text-xs text-white/70 mb-1">Contact Details</div>
-                                    <div className="text-sm font-mono font-bold tracking-wider break-words w-full whitespace-normal">
-                                      {benefit.contact}
-                                    </div>
-                                  </div>
-                                </div>
-                              ) : benefit.status === 'active' && benefit.id === 2 ? (
-                                <div className="bg-white/10 backdrop-blur-md rounded-lg p-2.5 border border-white/20">
-                                  <div className="flex flex-col gap-1 w-full">
-                                    <div className="text-xs text-white/70 mb-1">How to Avail</div>
-                                    <div className="text-sm font-mono font-bold tracking-wider break-words w-full whitespace-normal">
-                                      {benefit.contact}
-                                    </div>
-                                  </div>
-                                </div>
-                              ) : benefit.status === 'active' ? (
-                                <div className="bg-white/10 backdrop-blur-md rounded-lg p-2.5 border border-white/20">
-                                  <div className="text-xs text-white/70 mb-1">Promo Code</div>
-                                  <div className="flex items-center justify-between">
-                                    <div className="text-sm font-mono font-bold tracking-wider">
-                                      {benefit.code}
-                                    </div>
-                                    <button 
-                                      onClick={(e) => {
-                                        e.stopPropagation()
-                                        navigator.clipboard.writeText(benefit.code)
-                                      }}
-                                      className="bg-white text-blue-600 px-2 py-0.5 rounded text-xs font-semibold hover:bg-blue-50 transition-colors"
-                                    >
-                                      Copy
-                                    </button>
-                                  </div>
-                                </div>
-                              ) : (
-                                <div className="bg-white/10 backdrop-blur-md rounded-lg p-2.5 border border-white/20 text-center">
-                                  <div className="text-xs text-white/70">Check back soon for details</div>
-                                </div>
-                              )}
+                            {/* Description Preview */}
+                            <p className="text-xs text-gray-600 mb-3 line-clamp-2">
+                              {benefit.description}
+                            </p>
+
+                            {/* Click for Details */}
+                            <div className="flex items-center justify-center">
+                              <span className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-medium">
+                                Click for Details →
+                              </span>
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Navigation Arrows */}
-                  <button
-                    onClick={prevSlide}
-                    className="absolute left-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-lg hover:bg-gray-50 transition-colors z-10"
-                  >
-                    <svg className="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  
-                  <button
-                    onClick={nextSlide}
-                    className="absolute right-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-2 shadow-lg hover:bg-gray-50 transition-colors z-10"
-                  >
-                    <svg className="w-5 h-5 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-
-                  {/* Dots Indicator */}
-                  <div className="flex justify-center gap-2 mt-2">
-                    {benefits.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => scrollToSlide(index)}
-                        className={`w-2 h-2 rounded-full transition-all ${
-                          currentSlide === index 
-                            ? 'bg-blue-600 w-6' 
-                            : 'bg-gray-300 hover:bg-gray-400'
-                        }`}
-                      />
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
               {/* Digital Membership Card - Unique Design */}
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">📇 Digital Member Card</h2>
+                <h2 className="text-2xl font-bold text-gray-900 mb-4">Digital Member Card</h2>
                 {/* Debug info - remove in production */}
                 {(!userProfile?.memberId || !userProfile?.nsuId || !userProfile?.major) && (
                   <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
@@ -511,6 +624,110 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      
+      {/* Benefit Details Modal */}
+      {isModalOpen && selectedBenefit && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          onClick={closeModal}
+        >
+          <div 
+            className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header with Image */}
+            <div className="relative h-48 bg-gradient-to-br from-blue-400 to-purple-500 overflow-hidden">
+              {selectedBenefit.image ? (
+                <img
+                  src={selectedBenefit.image}
+                  alt={selectedBenefit.title}
+                  className="w-full h-full object-cover object-center"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-6xl text-white/80">
+                  {getBenefitIcon(selectedBenefit)}
+                </div>
+              )}
+              <button
+                onClick={closeModal}
+                className="absolute top-4 right-4 bg-black/20 hover:bg-black/40 text-white rounded-full p-2 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            {/* Modal Content */}
+            <div className="p-6 space-y-4">
+              {/* Title and Discount */}
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold text-gray-800">{selectedBenefit.title}</h3>
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl font-bold text-blue-600">{selectedBenefit.discount}</span>
+                  <span className="bg-green-100 text-green-800 text-sm px-3 py-1 rounded-full font-medium">
+                    {selectedBenefit.status === 'active' ? 'Active' : selectedBenefit.status}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Description */}
+              <p className="text-gray-600 leading-relaxed">{selectedBenefit.description}</p>
+              
+              {/* Promo Code Section */}
+              {selectedBenefit.promoCode && selectedBenefit.promoCode.trim() !== '' && (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <div className="text-sm font-medium text-yellow-700 mb-2">Promo Code:</div>
+                  <div className="flex items-center justify-between bg-white rounded-lg px-3 py-2 border">
+                    <span className="font-mono font-bold text-lg tracking-wider text-gray-800">
+                      {selectedBenefit.promoCode}
+                    </span>
+                    <button 
+                      onClick={() => {
+                        navigator.clipboard.writeText(selectedBenefit.promoCode || '');
+                        alert('Promo code copied!');
+                      }}
+                      className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-sm font-medium transition-colors"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              {/* How to Avail Instructions - Always show */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="text-sm font-medium text-blue-700 mb-2">How to Avail:</div>
+                <div className="text-gray-700 space-y-2">
+                  {selectedBenefit.instructions ? (
+                    <div className="whitespace-pre-line">{selectedBenefit.instructions}</div>
+                  ) : selectedBenefit.contactEmail ? (
+                    <div>
+                      Contact us at: <a href={`mailto:${selectedBenefit.contactEmail}`} className="text-blue-600 underline">{selectedBenefit.contactEmail}</a>
+                    </div>
+                  ) : (
+                    <div>Show your NSU Alumni membership card or digital member card to avail this benefit. Contact the partner directly for more details.</div>
+                  )}
+                  
+                  {selectedBenefit.status !== 'active' && (
+                    <div className="mt-2 text-sm text-orange-600 bg-orange-50 p-2 rounded">
+                      ⚠️ This benefit is currently {selectedBenefit.status}. Please check back later.
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Terms */}
+              {selectedBenefit.terms && (
+                <div className="text-xs text-gray-500 bg-gray-50 p-3 rounded-lg">
+                  <span className="font-medium">Terms & Conditions:</span>
+                  <div className="mt-1">{selectedBenefit.terms}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </ProtectedRoute>
   )
 }

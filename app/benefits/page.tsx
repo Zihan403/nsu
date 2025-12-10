@@ -1,29 +1,72 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
+import { collection, getDocs, query, orderBy } from 'firebase/firestore'
+import { db } from '@/lib/firebaseConfig'
+
+interface Benefit {
+  id: string
+  title: string
+  discount: string
+  description: string
+  image: string
+  color: string
+  link: string
+  isExternal: boolean
+  status: string
+  contactEmail?: string
+  instructions?: string
+}
 
 export default function Benefits() {
-  const perks = [
+  const { user } = useAuth()
+  const router = useRouter()
+  const [perks, setPerks] = useState<Benefit[]>([])
+  const [loading, setLoading] = useState(true)
+
+  const handleUnlockBenefit = (perk: Benefit) => {
+    if (user) {
+      // User is logged in, redirect to dashboard
+      router.push('/dashboard')
+    } else {
+      // User is not logged in, redirect to signup
+      router.push('/join')
+    }
+  }
+
+  // Fallback data in case Firestore is empty or fails
+  const fallbackPerks: Benefit[] = [
     {
+      id: '1',
       title: "The Hopkins Group",
       discount: "10% OFF",
-      description: "Financial planning & accounting benefits for alumni. Enjoy 10% off professional financial, tax, and wealth advisory services through our official partner.",
+      description: "Financial planning & accounting benefits for alumni through MelbourneNSUers partnership.",
       image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&h=400&fit=crop",
       color: "blue",
       link: "/join",
       isExternal: false,
-      status: "active"
+      status: "active",
+      contactEmail: "arashedi@thehopkinsgroup.com.au",
+      instructions: "Contact us directly for your exclusive alumni discount"
     },
     {
+      id: '2',
       title: "RRAE Pty Ltd (Operator of Subway Skye)",
       discount: "10% OFF",
-      description: "Exclusive 10% in-store discount for verified alumni members. Enjoy quality food and great savings at Subway Skye with your NSUers membership.",
+      description: "Exclusive discount for verified MelbourneNSUers members at Subway Skye.",
       image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&h=400&fit=crop",
       color: "green",
       link: "/join",
       isExternal: false,
-      status: "active"
+      status: "active",
+      instructions: "Show your MelbourneNSUers membership card in-store"
     },
     {
+      id: '3',
       title: "More Partners Coming Soon",
       discount: "COMING SOON",
       description: "Exciting new partnerships across dining, automotive, retail, and lifestyle sectors. More exclusive member benefits arriving soon!",
@@ -34,6 +77,41 @@ export default function Benefits() {
       status: "coming-soon"
     }
   ]
+
+  // Fetch benefits from Firestore
+  useEffect(() => {
+    const fetchBenefits = async () => {
+      if (!db) {
+        console.error('Firebase not initialized, using fallback data')
+        setPerks(fallbackPerks)
+        setLoading(false)
+        return
+      }
+
+      try {
+        const benefitsQuery = query(collection(db, 'benefits'), orderBy('status', 'asc'))
+        const querySnapshot = await getDocs(benefitsQuery)
+        
+        const benefitsData: Benefit[] = []
+        querySnapshot.forEach((doc) => {
+          benefitsData.push({
+            id: doc.id,
+            ...doc.data()
+          } as Benefit)
+        })
+        
+        // Use Firestore data if available, otherwise use fallback
+        setPerks(benefitsData.length > 0 ? benefitsData : fallbackPerks)
+      } catch (error) {
+        console.error('Error fetching benefits:', error)
+        setPerks(fallbackPerks)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchBenefits()
+  }, [])
 
   const colorClasses = {
     blue: {
@@ -80,21 +158,37 @@ export default function Benefits() {
           <p className="text-lg text-gray-600">Exclusive discounts and benefits for registered members</p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {perks.map((perk, index) => (
+        {/* Loading State */}
+        {loading ? (
+          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+            {[1, 2, 3].map((n) => (
+              <div key={n} className="bg-white rounded-lg shadow-lg overflow-hidden animate-pulse">
+                <div className="h-64 bg-gray-300"></div>
+                <div className="p-6">
+                  <div className="h-6 bg-gray-300 rounded w-3/4 mb-3"></div>
+                  <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
+                  <div className="h-4 bg-gray-300 rounded w-5/6 mb-4"></div>
+                  <div className="h-12 bg-gray-300 rounded"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+            {perks.map((perk, index) => (
             <div 
               key={index}
               className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 opacity-0 animate-fade-in-up"
               style={{ animationDelay: `${index * 100}ms`, animationFillMode: 'forwards' }}
             >
               {/* Image */}
-              <div className="relative h-48 overflow-hidden">
+              <div className="relative h-64 overflow-hidden">
                 <Image
                   src={perk.image}
                   alt={perk.title}
                   width={600}
                   height={400}
-                  className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-300"
+                  className="w-full h-full object-cover object-center transform hover:scale-110 transition-transform duration-300"
                   priority={index === 0}
                   loading={index === 0 ? undefined : 'lazy'}
                 />
@@ -106,25 +200,29 @@ export default function Benefits() {
 
               {/* Content */}
               <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-3 min-h-[56px]">
+                <h3 className="text-xl font-bold text-gray-900 mb-3 h-14 flex items-center">
                   {perk.title}
                 </h3>
-                <p className="text-gray-600 text-sm leading-relaxed mb-4 min-h-[120px]">
+                <div className="mb-4">
+                  <span className="text-2xl font-bold text-blue-600">{perk.discount}</span>
+                </div>
+                <p className="text-gray-600 text-sm mb-4 h-12 overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                   {perk.description}
                 </p>
-                <Link 
-                  href={perk.link}
-                  className={`w-full ${colorClasses[perk.color as keyof typeof colorClasses].button} text-white py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center gap-2`}
+                <button 
+                  onClick={() => handleUnlockBenefit(perk)}
+                  className={`w-full ${colorClasses[perk.color as keyof typeof colorClasses].button} text-white py-3 rounded-lg font-semibold transition-colors duration-300 flex items-center justify-center gap-2 hover:opacity-90`}
                 >
                   Unlock Benefit
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
-                </Link>
+                </button>
               </div>
             </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Future Perks Section */}
         <div className="mt-16 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-2xl p-8 border-2 border-indigo-200">
@@ -135,7 +233,7 @@ export default function Benefits() {
             <h3 className="text-2xl font-bold text-gray-900 mb-3">Future Partner Offers</h3>
             <p className="text-gray-700 text-lg max-w-3xl mx-auto">
               More exciting discounts and collaborations coming soon across hospitality, retail, lifestyle, 
-              and education sectors. Stay tuned for more ways to enjoy being a Melbourne NSUers member!
+              and education sectors. Stay tuned for more ways to enjoy being a MelbourneNSUers member!
             </p>
           </div>
         </div>
@@ -269,6 +367,8 @@ export default function Benefits() {
           </div>
         </div>
       </div>
+
+
     </div>
   )
 }

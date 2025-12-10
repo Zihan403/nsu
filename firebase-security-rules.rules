@@ -1,0 +1,52 @@
+// Firestore Security Rules
+// Copy these rules to your Firebase Console > Firestore Database > Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Users collection - existing rules (keep these)
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read: if request.auth != null; // Allow all authenticated users to read other profiles
+    }
+    
+    // Events collection - existing rules (keep these)
+    match /events/{eventId} {
+      allow read: if true; // Anyone can read events
+      allow write: if request.auth != null && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true ||
+         request.auth.token.email in ['zihansarowar403@gmail.com', 'melbournensuer@gmail.com']);
+    }
+    
+    // Contact messages collection - existing rules (keep these)
+    match /contactMessages/{messageId} {
+      allow create: if true; // Anyone can create contact messages
+      allow read, update, delete: if request.auth != null && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true ||
+         request.auth.token.email in ['zihansarowar403@gmail.com', 'melbournensuer@gmail.com']);
+    }
+    
+    // NEWS collection - NEW RULES
+    match /news/{newsId} {
+      // Anyone can read news (public content)
+      allow read: if true;
+      
+      // Only admins can create, update, delete news
+      allow create, update, delete: if request.auth != null && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true ||
+         request.auth.token.email in ['zihansarowar403@gmail.com', 'melbournensuer@gmail.com']);
+    }
+    
+    // BENEFITS collection - NEW RULES  
+    match /benefits/{benefitId} {
+      // Anyone can read benefits (public content)
+      allow read: if true;
+      
+      // Only admins can create, update, delete benefits
+      allow create, update, delete: if request.auth != null && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true ||
+         request.auth.token.email in ['zihansarowar403@gmail.com', 'melbournensuer@gmail.com']);
+    }
+  }
+}

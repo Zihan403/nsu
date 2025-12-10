@@ -193,7 +193,7 @@ export default function AdminEventsPage() {
           <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8 mb-8 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold mb-2">📅 Manage Events</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-2">Manage Events</h1>
                 <p className="text-blue-200">{events.length} events</p>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-4 sm:mt-0">
@@ -402,7 +402,7 @@ export default function AdminEventsPage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <span className="text-sm font-semibold text-blue-300">
-                          📅 {event.date} • {event.time}
+                          {event.date} • {event.time}
                         </span>
                         <span className="px-3 py-1 bg-blue-500/20 text-blue-300 text-xs font-semibold rounded-full border border-blue-400/30">
                           {event.category}

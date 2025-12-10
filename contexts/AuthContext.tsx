@@ -30,6 +30,8 @@ interface UserProfile {
   address?: string
   currentJob?: string
   company?: string
+  industry?: string
+  workLocation?: string
   location?: string
   membershipTier?: 'basic' | 'premium' | 'lifetime'
   joinedAt: Date

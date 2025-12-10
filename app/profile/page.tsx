@@ -4,6 +4,8 @@ import { useAuth } from '../../contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import ProtectedRoute from '../../components/ProtectedRoute'
 import { useState, useEffect } from 'react'
+import { doc, updateDoc, getDoc, setDoc } from 'firebase/firestore'
+import { db } from '@/lib/firebaseConfig'
 import dynamic from 'next/dynamic'
 
 const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
@@ -22,7 +24,11 @@ export default function EditProfile() {
     streetAddress: '',
     suburb: '',
     state: '',
-    postcode: ''
+    postcode: '',
+    currentJob: '',
+    company: '',
+    industry: '',
+    workLocation: ''
   })
 
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
@@ -50,7 +56,11 @@ export default function EditProfile() {
       streetAddress: addressParts[0] || '',
       suburb: addressParts[1] || '',
       state: addressParts[2] || '',
-      postcode: addressParts[3] || ''
+      postcode: addressParts[3] || '',
+      currentJob: userProfile.currentJob || '',
+      company: userProfile.company || '',
+      industry: userProfile.industry || '',
+      workLocation: userProfile.workLocation || ''
     })
 
     if (userProfile.photoURL) {
@@ -102,7 +112,11 @@ export default function EditProfile() {
         lastName: formData.lastName,
         displayName: `${formData.firstName} ${formData.lastName}`,
         phoneNumber: formData.phoneNumber,
-        address: fullAddress
+        address: fullAddress,
+        currentJob: formData.currentJob,
+        company: formData.company,
+        industry: formData.industry,
+        workLocation: formData.workLocation
       }
 
       // Add photo URL if one was uploaded via Cloudinary
@@ -117,13 +131,11 @@ export default function EditProfile() {
       await updateUserProfile(updateData)
       
       setMessage({ type: 'success', text: 'Profile updated successfully!' })
+      setSaving(false)
       
-      console.log('⏱️ Redirecting to dashboard in 1500ms...')
-      setTimeout(() => {
-        console.log('🔀 Redirecting now...')
-        setSaving(false)
-        router.push('/dashboard')
-      }, 1500)
+      console.log('✅ Profile update completed, redirecting to dashboard...')
+      // Redirect immediately since updateUserProfile already waits for completion
+      router.push('/dashboard')
     } catch (error: any) {
       console.error('❌ Error updating profile:', error)
       setSaving(false)
@@ -371,6 +383,79 @@ export default function EditProfile() {
                     onChange={handleInputChange}
                     placeholder="3000"
                     maxLength={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Professional Information */}
+            <div className="bg-white rounded-xl shadow-md p-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Professional Information</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Current Job Title
+                  </label>
+                  <input
+                    type="text"
+                    name="currentJob"
+                    value={formData.currentJob}
+                    onChange={handleInputChange}
+                    placeholder="Software Engineer, Manager, etc."
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Company/Organization
+                  </label>
+                  <input
+                    type="text"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleInputChange}
+                    placeholder="Company name"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Industry
+                  </label>
+                  <select
+                    name="industry"
+                    value={formData.industry}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900"
+                  >
+                    <option value="">Select Industry</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Finance">Finance & Banking</option>
+                    <option value="Education">Education</option>
+                    <option value="Consulting">Consulting</option>
+                    <option value="Engineering">Engineering</option>
+                    <option value="Government">Government</option>
+                    <option value="Non-Profit">Non-Profit</option>
+                    <option value="Retail">Retail</option>
+                    <option value="Manufacturing">Manufacturing</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Work Location
+                  </label>
+                  <input
+                    type="text"
+                    name="workLocation"
+                    value={formData.workLocation}
+                    onChange={handleInputChange}
+                    placeholder="Melbourne, Sydney, Remote, etc."
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-400"
                   />
                 </div>
