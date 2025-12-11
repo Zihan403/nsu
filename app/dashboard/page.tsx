@@ -152,11 +152,10 @@ export default function Dashboard() {
           })
         })
 
-        setBenefits(fetchedBenefits.length > 0 ? fetchedBenefits : staticBenefits)
+        setBenefits(fetchedBenefits)
       } catch (error) {
         console.error('Error fetching benefits:', error)
-        // Keep static benefits as fallback
-        setBenefits(staticBenefits)
+        setBenefits([])
       } finally {
         setLoadingBenefits(false)
       }
@@ -205,7 +204,7 @@ export default function Dashboard() {
   const stats = {
     eventsJoined: userProfile?.eventsJoined || 0,
     connections: userProfile?.connections || 0,
-    activeBenefits: loadingBenefits ? 3 : (benefits.length > 0 ? benefits.filter(b => b.status === 'active').length : staticBenefits.filter(b => b.status === 'active').length)
+    activeBenefits: loadingBenefits ? 0 : benefits.filter(b => b.status === 'active').length
   }
 
   // Function to download the member card
@@ -358,7 +357,7 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {(benefits.length > 0 ? benefits : staticBenefits).map((benefit) => (
+                      {benefits.length > 0 ? benefits.map((benefit) => (
                         <div
                           key={benefit.id}
                           onClick={() => openModal(benefit)}
@@ -424,7 +423,13 @@ export default function Dashboard() {
                             </div>
                           </div>
                         </div>
-                      ))}
+                      )) : (
+                        <div className="col-span-full text-center py-12">
+                          <div className="text-6xl mb-4">🎁</div>
+                          <h3 className="text-lg font-semibold text-gray-700 mb-2">No Benefits Available</h3>
+                          <p className="text-gray-500">Check back later for exclusive member benefits!</p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

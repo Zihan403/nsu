@@ -140,8 +140,8 @@ export default function Home() {
   useEffect(() => {
     const fetchNews = async () => {
       if (!db) {
-        console.error('Firebase not initialized, using fallback news');
-        setNewsArticles(fallbackNews);
+        console.error('Firebase not initialized');
+        setNewsArticles([]);
         setLoadingNews(false);
         return;
       }
@@ -162,11 +162,10 @@ export default function Home() {
           } as NewsArticle);
         });
         
-        // Use Firestore data if available, otherwise use fallback
-        setNewsArticles(newsData.length > 0 ? newsData : fallbackNews);
+        setNewsArticles(newsData);
       } catch (error) {
         console.error('Error fetching news:', error);
-        setNewsArticles(fallbackNews);
+        setNewsArticles([]);
       } finally {
         setLoadingNews(false);
       }
@@ -416,7 +415,7 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          ) : (
+          ) : newsArticles.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {newsArticles.map((article) => (
                 <a 
@@ -449,6 +448,12 @@ export default function Home() {
                   </p>
                 </a>
               ))}
+            </div>
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <div className="text-6xl mb-4">📰</div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">No News Available</h3>
+              <p className="text-gray-600">Check back later for the latest updates and stories!</p>
             </div>
           )}
 
