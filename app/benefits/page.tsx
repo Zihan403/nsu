@@ -38,52 +38,12 @@ export default function Benefits() {
     }
   }
 
-  // Fallback data in case Firestore is empty or fails
-  const fallbackPerks: Benefit[] = [
-    {
-      id: '1',
-      title: "The Hopkins Group",
-      discount: "10% OFF",
-      description: "Financial planning & accounting benefits for alumni through MelbourneNSUers partnership.",
-      image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=600&h=400&fit=crop",
-      color: "blue",
-      link: "/join",
-      isExternal: false,
-      status: "active",
-      contactEmail: "arashedi@thehopkinsgroup.com.au",
-      instructions: "Contact us directly for your exclusive alumni discount"
-    },
-    {
-      id: '2',
-      title: "RRAE Pty Ltd (Operator of Subway Skye)",
-      discount: "10% OFF",
-      description: "Exclusive discount for verified MelbourneNSUers members at Subway Skye.",
-      image: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&h=400&fit=crop",
-      color: "green",
-      link: "/join",
-      isExternal: false,
-      status: "active",
-      instructions: "Show your MelbourneNSUers membership card in-store"
-    },
-    {
-      id: '3',
-      title: "More Partners Coming Soon",
-      discount: "COMING SOON",
-      description: "Exciting new partnerships across dining, automotive, retail, and lifestyle sectors. More exclusive member benefits arriving soon!",
-      image: "https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=600&h=400&fit=crop",
-      color: "purple",
-      link: "/join",
-      isExternal: false,
-      status: "coming-soon"
-    }
-  ]
-
   // Fetch benefits from Firestore
   useEffect(() => {
     const fetchBenefits = async () => {
       if (!db) {
-        console.error('Firebase not initialized, using fallback data')
-        setPerks(fallbackPerks)
+        console.error('Firebase not initialized')
+        setPerks([])
         setLoading(false)
         return
       }
@@ -100,11 +60,10 @@ export default function Benefits() {
           } as Benefit)
         })
         
-        // Use Firestore data if available, otherwise use fallback
-        setPerks(benefitsData.length > 0 ? benefitsData : fallbackPerks)
+        setPerks(benefitsData)
       } catch (error) {
         console.error('Error fetching benefits:', error)
-        setPerks(fallbackPerks)
+        setPerks([])
       } finally {
         setLoading(false)
       }
@@ -173,7 +132,7 @@ export default function Benefits() {
               </div>
             ))}
           </div>
-        ) : (
+        ) : perks.length > 0 ? (
           <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8">
             {perks.map((perk, index) => (
             <div 
@@ -221,6 +180,12 @@ export default function Benefits() {
               </div>
             </div>
             ))}
+          </div>
+        ) : (
+          <div className="text-center py-16">
+            <div className="text-6xl mb-4">🎁</div>
+            <h3 className="text-2xl font-bold text-gray-900 mb-3">No Benefits Available</h3>
+            <p className="text-gray-600 text-lg">Check back later for exclusive member perks and discounts!</p>
           </div>
         )}
 
