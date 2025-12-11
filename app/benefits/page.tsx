@@ -54,10 +54,14 @@ export default function Benefits() {
         
         const benefitsData: Benefit[] = []
         querySnapshot.forEach((doc) => {
-          benefitsData.push({
-            id: doc.id,
-            ...doc.data()
-          } as Benefit)
+          const data = doc.data()
+          // Only include benefits with valid images
+          if (data.image && data.image.trim() !== '') {
+            benefitsData.push({
+              id: doc.id,
+              ...data
+            } as Benefit)
+          }
         })
         
         setPerks(benefitsData)
@@ -143,7 +147,7 @@ export default function Benefits() {
               {/* Image */}
               <div className="relative h-64 overflow-hidden">
                 <Image
-                  src={perk.image}
+                  src={perk.image || 'https://images.unsplash.com/photo-1557804506-669a67965ba0?w=600&h=400&fit=crop'}
                   alt={perk.title}
                   width={600}
                   height={400}
