@@ -83,7 +83,7 @@ export default function VerifyEmail() {
     try {
       await sendEmailVerification()
       setError('') // Clear any previous errors
-      alert('Verification email sent! Please check your inbox and spam folder.')
+      alert('✅ Verification email sent successfully!\n\n📧 Please check your inbox AND spam/junk folder.\n\nIf you find it in spam, mark it as "Not Spam".')
     } catch (error: any) {
       setError('Failed to send verification email. Please try again.')
     } finally {
@@ -162,12 +162,27 @@ export default function VerifyEmail() {
           <p className="text-gray-600 mb-4">
             We've sent a verification link to <strong>{user?.email}</strong>
           </p>
-          <p className="text-sm text-gray-500 mb-2">
+          <p className="text-sm text-gray-500 mb-4">
             Click the link in the email to verify your account. This page will automatically update when verified.
           </p>
-          <p className="text-sm text-yellow-600 mb-6">
-            <strong>Tip:</strong> If you don't see the email, please check your spam or junk folder.
-          </p>
+          
+          {/* Spam Folder Notice */}
+          <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4 mb-6">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0">
+                <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-sm font-semibold text-yellow-800 mb-1">Can't find the verification email?</p>
+                <p className="text-sm text-yellow-700">
+                  <strong>Please check your spam/junk folder!</strong> Verification emails sometimes get filtered. 
+                  If you find it there, mark it as "Not Spam" to receive future emails.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {error && (
